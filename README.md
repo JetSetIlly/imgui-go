@@ -4,16 +4,6 @@
 [![Go Report Card](https://goreportcard.com/badge/github.com/inkyblackness/imgui-go)](https://goreportcard.com/report/github.com/inkyblackness/imgui-go)
 [![Lint Status](https://github.com/inkyblackness/imgui-go/workflows/golangci-lint/badge.svg)](https://github.com/inkyblackness/imgui-go/actions)
 
-## Discontinued
-**This repository is no longer maintained as per 2022-12-31.
-Please consider using https://github.com/AllenDang/cimgui-go instead.
-That project is an auto-generated wrapper and makes it easier to be at the latest version of *Dear ImGui*.**
-
-**You may also have a look at this fork https://github.com/eliasdaler/imgui-go , the owner intended to
-continue to support it.**
-
----
-
 This library is a [Go](https://www.golang.org) wrapper for **[Dear ImGui](https://github.com/ocornut/imgui)**.
 
 This wrapper started as a special-purpose wrapper for use within InkyBlackness.
