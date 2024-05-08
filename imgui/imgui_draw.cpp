@@ -2618,9 +2618,16 @@ void ImFontAtlasBuildPackCustomRects(ImFontAtlas* atlas, void* stbrp_context_opa
     ImVector<ImFontAtlasCustomRect>& user_rects = atlas->CustomRects;
     IM_ASSERT(user_rects.Size >= 1); // We expect at least the default custom rects to be registered, else something went wrong.
 
+// https://github.com/ocornut/imgui/issues/5343
+#ifdef __GNUC__
+    if (user_rects.Size < 1) {
+        __builtin_unreachable();
+	}
+#endif
+
     ImVector<stbrp_rect> pack_rects;
     pack_rects.resize(user_rects.Size);
-    memset(pack_rects.Data, 0, (size_t)pack_rects.size_in_bytes());
+    memset(pack_rects.Data, 0, pack_rects.size_in_bytes());
     for (int i = 0; i < user_rects.Size; i++)
     {
         pack_rects[i].w = user_rects[i].Width;
