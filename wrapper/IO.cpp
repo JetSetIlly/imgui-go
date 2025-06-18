@@ -64,12 +64,6 @@ extern int iggMetricsActiveWindows(IggIO handle)
    return io->MetricsActiveWindows;
 }
 
-extern int iggMetricsActiveAllocations(IggIO handle)
-{
-   ImGuiIO *io = reinterpret_cast<ImGuiIO *>(handle);
-   return io->MetricsActiveAllocations;
-}
-
 extern void iggMouseDelta(IggIO handle, IggVec2 *value)
 {
    ImGuiIO *io = reinterpret_cast<ImGuiIO *>(handle);
@@ -144,28 +138,16 @@ void iggIoSetFontGlobalScale(IggIO handle, float value)
    io->FontGlobalScale = value;
 }
 
-void iggIoKeyPress(IggIO handle, int key)
+void iggIoAddKeyEvent(IggIO handle, int key, IggBool down)
 {
    ImGuiIO &io = *reinterpret_cast<ImGuiIO *>(handle);
-   io.KeysDown[key] = true;
+   io.AddKeyEvent((ImGuiKey)key, down == 1);
 }
 
-void iggIoKeyRelease(IggIO handle, int key)
+IggBool iggKeyDown(IggIO handle, int key)
 {
    ImGuiIO &io = *reinterpret_cast<ImGuiIO *>(handle);
-   io.KeysDown[key] = false;
-}
-
-void iggIoKeyMap(IggIO handle, int imguiKey, int nativeKey)
-{
-   ImGuiIO &io = *reinterpret_cast<ImGuiIO *>(handle);
-   io.KeyMap[imguiKey] = nativeKey;
-}
-
-void iggIoKeyCtrl(IggIO handle, int leftCtrl, int rightCtrl)
-{
-   ImGuiIO &io = *reinterpret_cast<ImGuiIO *>(handle);
-   io.KeyCtrl = io.KeysDown[leftCtrl] || io.KeysDown[rightCtrl];
+   return ImGui::IsKeyDown((ImGuiKey)key) ? 1 : 0;
 }
 
 IggBool iggIoKeyCtrlPressed(IggIO handle)
@@ -174,34 +156,16 @@ IggBool iggIoKeyCtrlPressed(IggIO handle)
    return io.KeyCtrl ? 1 : 0;
 }
 
-void iggIoKeyShift(IggIO handle, int leftShift, int rightShift)
-{
-   ImGuiIO &io = *reinterpret_cast<ImGuiIO *>(handle);
-   io.KeyShift = io.KeysDown[leftShift] || io.KeysDown[rightShift];
-}
-
 IggBool iggIoKeyShiftPressed(IggIO handle)
 {
    ImGuiIO &io = *reinterpret_cast<ImGuiIO *>(handle); 
    return io.KeyShift ? 1 : 0;
 }
 
-void iggIoKeyAlt(IggIO handle, int leftAlt, int rightAlt)
-{
-   ImGuiIO &io = *reinterpret_cast<ImGuiIO *>(handle);
-   io.KeyAlt = io.KeysDown[leftAlt] || io.KeysDown[rightAlt];
-}
-
 IggBool iggIoKeyAltPressed(IggIO handle)
 {
    ImGuiIO &io = *reinterpret_cast<ImGuiIO *>(handle); 
    return io.KeyAlt ? 1 : 0;
-}
-
-void iggIoKeySuper(IggIO handle, int leftSuper, int rightSuper)
-{
-   ImGuiIO &io = *reinterpret_cast<ImGuiIO *>(handle);
-   io.KeySuper = io.KeysDown[leftSuper] || io.KeysDown[rightSuper];
 }
 
 IggBool iggIoKeySuperPressed(IggIO handle)
@@ -249,31 +213,3 @@ void iggIoSetMouseDrawCursor(IggIO handle, IggBool show)
    io.MouseDrawCursor = show != 0;
 }
 
-extern "C" void iggIoSetClipboardText(IggIO handle, char *text);
-extern "C" char *iggIoGetClipboardText(IggIO handle);
-
-static void iggIoSetClipboardTextWrapper(void *userData, char const *text)
-{
-   iggIoSetClipboardText(userData, const_cast<char *>(text));
-}
-
-static char const *iggIoGetClipboardTextWrapper(void *userData)
-{
-   return iggIoGetClipboardText(userData);
-}
-
-void iggIoRegisterClipboardFunctions(IggIO handle)
-{
-   ImGuiIO &io = *reinterpret_cast<ImGuiIO *>(handle);
-   io.ClipboardUserData = handle;
-   io.GetClipboardTextFn = iggIoGetClipboardTextWrapper;
-   io.SetClipboardTextFn = iggIoSetClipboardTextWrapper;
-}
-
-void iggIoClearClipboardFunctions(IggIO handle)
-{
-   ImGuiIO &io = *reinterpret_cast<ImGuiIO *>(handle);
-   io.GetClipboardTextFn = nullptr;
-   io.SetClipboardTextFn = nullptr;
-   io.ClipboardUserData = nullptr;
-}

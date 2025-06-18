@@ -106,8 +106,8 @@ func (data InputTextCallbackData) SetEventChar(value rune) {
 }
 
 // EventKey returns the currently pressed key. Valid for completion and history callbacks.
-func (data InputTextCallbackData) EventKey() int {
-	return int(C.iggInputTextCallbackDataGetEventKey(data.handle))
+func (data InputTextCallbackData) EventKey() ImguiKey {
+	return ImguiKey(C.iggInputTextCallbackDataGetEventKey(data.handle))
 }
 
 // Buffer returns a view into the current UTF-8 buffer.

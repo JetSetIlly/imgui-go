@@ -32,26 +32,18 @@ extern void iggIoAddMouseWheelDelta(IggIO handle, float x, float y);
 extern void iggIoSetDeltaTime(IggIO handle, float value);
 extern void iggIoSetFontGlobalScale(IggIO handle, float value);
 
-extern void iggIoKeyPress(IggIO handle, int key);
-extern void iggIoKeyRelease(IggIO handle, int key);
-extern void iggIoKeyMap(IggIO handle, int imguiKey, int nativeKey);
-extern void iggIoKeyCtrl(IggIO handle, int leftCtrl, int rightCtrl);
+extern void iggIoAddKeyEvent(IggIO handle, int key, IggBool down);
 extern IggBool iggIoKeyCtrlPressed(IggIO handle);
-extern void iggIoKeyShift(IggIO handle, int leftShift, int rightShift);
 extern IggBool iggIoKeyShiftPressed(IggIO handle);
-extern void iggIoKeyAlt(IggIO handle, int leftAlt, int rightAlt);
 extern IggBool iggIoKeyAltPressed(IggIO handle);
-extern void iggIoKeySuper(IggIO handle, int leftSuper, int rightSuper);
 extern IggBool iggIoKeySuperPressed(IggIO handle);
 extern void iggIoAddInputCharactersUTF8(IggIO handle, char const *utf8Chars);
+
 extern void iggIoSetIniFilename(IggIO handle, char const *value);
 extern void iggIoSetConfigFlags(IggIO handle, int flags);
 extern void iggIoSetBackendFlags(IggIO handle, int flags);
 extern int iggIoGetBackendFlags(IggIO handle);
 extern void iggIoSetMouseDrawCursor(IggIO handle, IggBool show);
-
-extern void iggIoRegisterClipboardFunctions(IggIO handle);
-extern void iggIoClearClipboardFunctions(IggIO handle);
 
 #ifdef __cplusplus
 }
