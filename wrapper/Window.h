@@ -19,9 +19,6 @@ extern void iggWindowSize(IggVec2 *size);
 extern float iggWindowWidth(void);
 extern float iggWindowHeight(void);
 extern void iggContentRegionAvail(IggVec2 *size);
-extern void iggGetContentRegionMax(IggVec2 *out);
-extern void iggGetWindowContentRegionMin(IggVec2 *out);
-extern void iggGetWindowContentRegionMax(IggVec2 *out);
 
 extern void iggSetNextWindowPos(IggVec2 const *pos, int cond, IggVec2 const *pivot);
 extern void iggSetNextWindowSize(IggVec2 const *size, int cond);
@@ -39,10 +36,6 @@ extern void iggPopItemFlag(void);
 extern float iggCalcItemWidth(void);
 extern void iggPushTextWrapPos(float wrapPosX);
 extern void iggPopTextWrapPos(void);
-extern void iggPushAllowKeyboardFocus(IggBool allow);
-extern void iggPopAllowKeyboardFocus();
-extern void iggPushButtonRepeat(IggBool repeat);
-extern void iggPopButtonRepeat(void);
 
 extern IggViewport iggGetMainViewport();
 extern int iggViewportGetFlags(IggViewport handle);

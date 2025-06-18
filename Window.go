@@ -164,45 +164,6 @@ func ContentRegionAvail() Vec2 {
 	return value
 }
 
-// ContentRegionMax returns current content boundaries (typically window boundaries including scrolling,
-// or current column boundaries), in windows coordinates.
-func ContentRegionMax() Vec2 {
-	out := Vec2{}
-	outArg, outFin := out.wrapped()
-	C.iggGetContentRegionMax(outArg)
-	outFin()
-	return out
-}
-
-// WindowContentRegionMin returns the content boundaries min (roughly (0,0)-Scroll), in window coordinates.
-func WindowContentRegionMin() Vec2 {
-	out := Vec2{}
-	outArg, outFin := out.wrapped()
-	C.iggGetWindowContentRegionMin(outArg)
-	outFin()
-	return out
-}
-
-// WindowContentRegionMax returns the content boundaries max (roughly (0,0)+Size-Scroll) where Size can be overridden
-// with SetNextWindowContentSize(), in window coordinates.
-func WindowContentRegionMax() Vec2 {
-	out := Vec2{}
-	outArg, outFin := out.wrapped()
-	C.iggGetWindowContentRegionMax(outArg)
-	outFin()
-	return out
-}
-
-// WindowContentRegionWidth returns the width of the content boundary, in window coordinates.
-//
-// DEPRECATED: in v1.85, GetWindowContentRegionWidth() function has been removed.
-// This function now returns GetWindowContentRegionMax().x - GetWindowContentRegionMin().x,
-// as per v1.85 release notes. Please note it's not very useful in practice, and
-// using GetContentRegionAvail().x is generally a better choice.
-func WindowContentRegionWidth() float32 {
-	return WindowContentRegionMax().X - WindowContentRegionMin().X
-}
-
 // SetNextWindowPosV sets next window position.
 // Call before Begin(). Use pivot=(0.5,0.5) to center on given point, etc.
 func SetNextWindowPosV(pos Vec2, cond Condition, pivot Vec2) {
@@ -333,26 +294,6 @@ func PushTextWrapPos() {
 // PopTextWrapPos resets the last pushed position.
 func PopTextWrapPos() {
 	C.iggPopTextWrapPos()
-}
-
-// PushAllowKeyboardFocus allow the next window to take focus of the keyboard.
-func PushAllowKeyboardFocus(allow bool) {
-	C.iggPushAllowKeyboardFocus(castBool(allow))
-}
-
-//PopAllowKeyboardFocus pops most recent allow keyboard focus setting.
-func PopAllowKeyboardFocus() {
-	C.iggPopAllowKeyboardFocus()
-}
-
-// PushButtonRepeat enables button to repeat press if held.
-func PushButtonRepeat(repeat bool) {
-	C.iggPushButtonRepeat(castBool(repeat))
-}
-
-// PopButtonRepeat pops most recent button repeat setting.
-func PopButtonRepeat() {
-	C.iggPopButtonRepeat()
 }
 
 // Viewport A Platform Window (always only one in 'master' branch), in the future may represent Platform Monitor.

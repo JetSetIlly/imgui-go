@@ -62,24 +62,6 @@ void iggContentRegionAvail(IggVec2 *size)
    exportValue(*size, ImGui::GetContentRegionAvail());
 }
 
-void iggGetContentRegionMax(IggVec2 *out)
-{
-   ImVec2 im_out = ImGui::GetContentRegionMax();
-   exportValue(*out, im_out);
-}
-
-void iggGetWindowContentRegionMin(IggVec2 *out)
-{
-   ImVec2 im_out = ImGui::GetWindowContentRegionMin();
-   exportValue(*out, im_out);
-}
-
-void iggGetWindowContentRegionMax(IggVec2 *out)
-{
-   ImVec2 im_out = ImGui::GetWindowContentRegionMax();
-   exportValue(*out, im_out);
-}
-
 void iggSetNextWindowPos(IggVec2 const *pos, int cond, IggVec2 const *pivot)
 {
    Vec2Wrapper posArg(pos);
@@ -159,26 +141,6 @@ void iggPushTextWrapPos(float wrapPosX)
 void iggPopTextWrapPos(void)
 {
    ImGui::PopTextWrapPos();
-}
-
-void iggPushAllowKeyboardFocus(IggBool allow)
-{
-   ImGui::PushAllowKeyboardFocus(allow);
-}
-
-void iggPopAllowKeyboardFocus()
-{
-   ImGui::PopAllowKeyboardFocus();
-}
-
-void iggPushButtonRepeat(IggBool repeat)
-{
-   ImGui::PushButtonRepeat(repeat);
-}
-
-void iggPopButtonRepeat()
-{
-   ImGui::PopButtonRepeat();
 }
 
 IggViewport iggGetMainViewport()
