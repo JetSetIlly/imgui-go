@@ -58,9 +58,9 @@ IggBool iggIsItemToggledOpen()
    return ImGui::IsItemToggledOpen() ? 1 : 0;
 }
 
-void iggSetItemAllowOverlap()
+void iggSetNextItemAllowOverlap()
 {
-   ImGui::SetItemAllowOverlap();
+   ImGui::SetNextItemAllowOverlap();
 }
 
 IggBool iggIsWindowAppearing()
