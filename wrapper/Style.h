@@ -76,8 +76,6 @@ extern float iggGetTabRounding(IggGuiStyle handle);
 extern void iggSetTabRounding(IggGuiStyle handle, float v);
 extern float iggGetTabBorderSize(IggGuiStyle handle);
 extern void iggSetTabBorderSize(IggGuiStyle handle, float v);
-extern float iggGetTabMinWidthForCloseButton(IggGuiStyle handle);
-extern void iggSetTabMinWidthForCloseButton(IggGuiStyle handle, float v);
 extern float iggGetCurveTessellationTol(IggGuiStyle handle);
 extern void iggSetCurveTessellationTol(IggGuiStyle handle, float v);
 extern float iggGetCircleTessellationMaxError(IggGuiStyle handle);

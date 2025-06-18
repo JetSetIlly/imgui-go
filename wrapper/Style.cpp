@@ -374,18 +374,6 @@ void iggSetTabBorderSize(IggGuiStyle handle, float v)
    style->TabBorderSize = v;
 }
 
-float iggGetTabMinWidthForCloseButton(IggGuiStyle handle)
-{
-   ImGuiStyle *style = reinterpret_cast<ImGuiStyle *>(handle);
-   return style->TabMinWidthForCloseButton;
-}
-
-void iggSetTabMinWidthForCloseButton(IggGuiStyle handle, float v)
-{
-   ImGuiStyle *style = reinterpret_cast<ImGuiStyle *>(handle);
-   style->TabMinWidthForCloseButton = v;
-}
-
 float iggGetCurveTessellationTol(IggGuiStyle handle)
 {
    ImGuiStyle *style = reinterpret_cast<ImGuiStyle *>(handle);
@@ -539,7 +527,7 @@ IggDir iggStyleGetWindowMenuButtonPosition(IggGuiStyle handle)
 void iggStyleSetWindowMenuButtonPosition(IggGuiStyle handle, IggDir value)
 {
    ImGuiStyle *style = reinterpret_cast<ImGuiStyle *>(handle);
-   style->WindowMenuButtonPosition = value;
+   style->WindowMenuButtonPosition = (ImGuiDir)value;
 }
 
 IggDir iggStyleGetColorButtonPosition(IggGuiStyle handle)
@@ -551,5 +539,5 @@ IggDir iggStyleGetColorButtonPosition(IggGuiStyle handle)
 void iggStyleSetColorButtonPosition(IggGuiStyle handle, IggDir value)
 {
    ImGuiStyle *style = reinterpret_cast<ImGuiStyle *>(handle);
-   style->ColorButtonPosition = value;
+   style->ColorButtonPosition = (ImGuiDir)value;
 }

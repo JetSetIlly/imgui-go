@@ -541,20 +541,6 @@ func (style Style) SetTabBorderSize(v float32) {
 	C.iggSetTabBorderSize(style.handle(), C.float(v))
 }
 
-// TabMinWidthForCloseButton returns the minimum width for close button to
-// appears on an unselected tab when hovered. Set to 0.0f to always show when
-// hovering, set to FLT_MAX to never show close button unless selected.
-func (style Style) TabMinWidthForCloseButton() float32 {
-	return float32(C.iggGetTabMinWidthForCloseButton(style.handle()))
-}
-
-// SetTabMinWidthForCloseButton sets the minimum width for close button to
-// appears on an unselected tab when hovered. Set to 0.0f to always show when
-// hovering, set to FLT_MAX to never show close button unless selected.
-func (style Style) SetTabMinWidthForCloseButton(v float32) {
-	C.iggSetTabMinWidthForCloseButton(style.handle(), C.float(v))
-}
-
 // MouseCursorScale returns the scale software rendered mouse cursor (when
 // io.MouseDrawCursor is enabled). May be removed later.
 func (style Style) MouseCursorScale() float32 {
