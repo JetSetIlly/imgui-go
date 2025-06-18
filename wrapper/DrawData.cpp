@@ -19,7 +19,7 @@ IggBool iggDrawDataValid(IggDrawData handle)
 void iggDrawDataGetCommandLists(IggDrawData handle, void **handles, int *count)
 {
    ImDrawData *drawData = reinterpret_cast<ImDrawData *>(handle);
-   *handles = reinterpret_cast<void **>(drawData->CmdLists);
+   *handles = reinterpret_cast<void **>(drawData->CmdLists.Data);
    *count = drawData->CmdListsCount;
 }
 
