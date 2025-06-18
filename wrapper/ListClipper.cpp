@@ -2,60 +2,21 @@
 
 #include "ListClipper.h"
 #include "WrapperConverter.h"
+#include "_cgo_export.h"
 
-static void importValue(ImGuiListClipper &out, IggListClipper const &in);
-static void exportValue(IggListClipper &out, ImGuiListClipper const &in);
+#include <cstdint>
+#include <iostream>
 
-typedef TypeWrapper<ImGuiListClipper, IggListClipper> ListClipperWrapper;
-
-IggBool iggListClipperStep(IggListClipper *clipper)
-{
-   ImGuiListClipper imguiClipper;
-   importValue(imguiClipper, *clipper);
-   IggBool returnValue = imguiClipper.Step() ? 1 : 0;
-   exportValue(*clipper, imguiClipper);
-   // needs to be done to prevent assert fail, we don't call end because the cursor will move.
-   imguiClipper.ItemsCount = -1;
-   return returnValue;
-}
-
-void iggListClipperBegin(IggListClipper *clipper, int items_count, float items_height)
+void iggListClipperAll(IggListClipperResults *results, int items_count, float items_height, uintptr_t draw)
 {
    ImGuiListClipper imguiClipper;
    imguiClipper.Begin(items_count, items_height);
-   exportValue(*clipper, imguiClipper);
-   // needs to be done to prevent assert fail, we don't call end because the cursor will move.
-   imguiClipper.ItemsCount = -1;
-}
-
-void iggListClipperEnd(IggListClipper *clipper)
-{
-   ImGuiListClipper imguiClipper;
-   importValue(imguiClipper, *clipper);
-   imguiClipper.End();
-   exportValue(*clipper, imguiClipper);
-}
-
-static void importValue(ImGuiListClipper &out, IggListClipper const &in)
-{
-   out.DisplayStart = in.DisplayStart;
-   out.DisplayEnd = in.DisplayEnd;
-   out.ItemsCount = in.ItemsCount;
-
-   out.StepNo = in.StepNo;
-   out.ItemsFrozen = in.ItemsFrozen;
-   out.ItemsHeight = in.ItemsHeight;
-   out.StartPosY = in.StartPosY;
-}
-
-static void exportValue(IggListClipper &out, ImGuiListClipper const &in)
-{
-   out.DisplayStart = in.DisplayStart;
-   out.DisplayEnd = in.DisplayEnd;
-   out.ItemsCount = in.ItemsCount;
-
-   out.StepNo = in.StepNo;
-   out.ItemsFrozen = in.ItemsFrozen;
-   out.ItemsHeight = in.ItemsHeight;
-   out.StartPosY = in.StartPosY;
+   while (imguiClipper.Step()) {
+	   for (int i = imguiClipper.DisplayStart; i < imguiClipper.DisplayEnd; ++i) {
+		   listClipperDraw(draw, i);
+	   }
+   }
+   results->DisplayStart = imguiClipper.DisplayStart;
+   results->DisplayEnd = imguiClipper.DisplayEnd;
+   results->ItemsHeight = imguiClipper.ItemsHeight;
 }

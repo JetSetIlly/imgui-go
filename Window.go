@@ -70,9 +70,25 @@ func End() {
 	C.iggEnd()
 }
 
+// ChildFlags for BeginChildV(), etc.
+type ChildFlags int
+
+const (
+	ChildFlagsNone                   ChildFlags = 0
+	ChildFlagsBorders                ChildFlags = 1 << 0 // Show an outer border and enable WindowPadding. (IMPORTANT: this is always == 1 == true for legacy reason)
+	ChildFlagsAlwaysUseWindowPadding ChildFlags = 1 << 1 // Pad with style.WindowPadding even if no border are drawn (no padding by default for non-bordered child windows because it makes more sense)
+	ChildFlagsResizeX                ChildFlags = 1 << 2 // Allow resize from right border (layout direction). Enable .ini saving (unless ImGuiWindowFlags_NoSavedSettings passed to window flags)
+	ChildFlagsResizeY                ChildFlags = 1 << 3 // Allow resize from bottom border (layout direction). "
+	ChildFlagsAutoResizeX            ChildFlags = 1 << 4 // Enable auto-resizing width. Read "IMPORTANT: Size measurement" details above.
+	ChildFlagsAutoResizeY            ChildFlags = 1 << 5 // Enable auto-resizing height. Read "IMPORTANT: Size measurement" details above.
+	ChildFlagsAlwaysAutoResize       ChildFlags = 1 << 6 // Combined with AutoResizeX/AutoResizeY. Always measure size even when child is hidden, always return true, always disable clipping optimization! NOT RECOMMENDED.
+	ChildFlagsFrameStyle             ChildFlags = 1 << 7 // Style the child window like a framed item: use FrameBg, FrameRounding, FrameBorderSize, FramePadding instead of ChildBg, ChildRounding, ChildBorderSize, WindowPadding.
+	ChildFlagsNavFlattened           ChildFlags = 1 << 8 // [BETA] Share focus scope, allow keyboard/gamepad navigation to cross over parent border to this child or between sibling child windows.
+)
+
 // BeginChildV pushes a new child to the stack and starts appending to it.
 // flags are the WindowFlags to apply.
-func BeginChildV(id string, size Vec2, border bool, flags WindowFlags) bool {
+func BeginChildV(id string, size Vec2, border bool, flags ChildFlags) bool {
 	idArg, idFin := wrapString(id)
 	defer idFin()
 	sizeArg, _ := size.wrapped()

@@ -6,21 +6,14 @@
 extern "C" {
 #endif
 
-typedef struct tagIggListClipper
+typedef struct tagIggListClipperResults
 {
    int DisplayStart;
    int DisplayEnd;
-   int ItemsCount;
-
-   int StepNo;
-   int ItemsFrozen;
    float ItemsHeight;
-   float StartPosY;
-} IggListClipper;
+} IggListClipperResults;
 
-extern IggBool iggListClipperStep(IggListClipper *clipper);
-extern void iggListClipperBegin(IggListClipper *clipper, int items_count, float items_height);
-extern void iggListClipperEnd(IggListClipper *clipper);
+extern void iggListClipperAll(IggListClipperResults *results, int items_count, float items_height, uintptr_t draw);
 
 #ifdef __cplusplus
 }
