@@ -7,61 +7,42 @@ import "C"
 type ColorEditFlags int
 
 const (
-	// ColorEditFlagsNone default = 0.
-	ColorEditFlagsNone ColorEditFlags = 0
-	// ColorEditFlagsNoAlpha ignores Alpha component (read 3 components from the input pointer).
-	ColorEditFlagsNoAlpha ColorEditFlags = 1 << 1
-	// ColorEditFlagsNoPicker disables picker when clicking on colored square.
-	ColorEditFlagsNoPicker ColorEditFlags = 1 << 2
-	// ColorEditFlagsNoOptions disables toggling options menu when right-clicking on inputs/small preview.
-	ColorEditFlagsNoOptions ColorEditFlags = 1 << 3
-	// ColorEditFlagsNoSmallPreview disables colored square preview next to the inputs. (e.g. to show only the inputs).
-	ColorEditFlagsNoSmallPreview ColorEditFlags = 1 << 4
-	// ColorEditFlagsNoInputs disables inputs sliders/text widgets (e.g. to show only the small preview colored square).
-	ColorEditFlagsNoInputs ColorEditFlags = 1 << 5
-	// ColorEditFlagsNoTooltip disables tooltip when hovering the preview.
-	ColorEditFlagsNoTooltip ColorEditFlags = 1 << 6
-	// ColorEditFlagsNoLabel disables display of inline text label (the label is still forwarded to the tooltip and picker).
-	ColorEditFlagsNoLabel ColorEditFlags = 1 << 7
-	// ColorEditFlagsNoSidePreview disables bigger color preview on right side of the picker, use small colored square preview instead.
-	ColorEditFlagsNoSidePreview ColorEditFlags = 1 << 8
-	// ColorEditFlagsNoDragDrop disables drag and drop target. ColorButton: disable drag and drop source.
-	ColorEditFlagsNoDragDrop ColorEditFlags = 1 << 9
-	// ColorEditFlagsNoBorder disables border (which is enforced by default).
-	ColorEditFlagsNoBorder ColorEditFlags = 1 << 10
+	ColorEditFlagsNone           ColorEditFlags = 0
+	ColorEditFlagsNoAlpha        ColorEditFlags = 1 << 1  //              // ColorEdit, ColorPicker, ColorButton: ignore Alpha component (will only read 3 components from the input pointer).
+	ColorEditFlagsNoPicker       ColorEditFlags = 1 << 2  //              // ColorEdit: disable picker when clicking on color square.
+	ColorEditFlagsNoOptions      ColorEditFlags = 1 << 3  //              // ColorEdit: disable toggling options menu when right-clicking on inputs/small preview.
+	ColorEditFlagsNoSmallPreview ColorEditFlags = 1 << 4  //              // ColorEdit, ColorPicker: disable color square preview next to the inputs. (e.g. to show only the inputs)
+	ColorEditFlagsNoInputs       ColorEditFlags = 1 << 5  //              // ColorEdit, ColorPicker: disable inputs sliders/text widgets (e.g. to show only the small preview color square).
+	ColorEditFlagsNoTooltip      ColorEditFlags = 1 << 6  //              // ColorEdit, ColorPicker, ColorButton: disable tooltip when hovering the preview.
+	ColorEditFlagsNoLabel        ColorEditFlags = 1 << 7  //              // ColorEdit, ColorPicker: disable display of inline text label (the label is still forwarded to the tooltip and picker).
+	ColorEditFlagsNoSidePreview  ColorEditFlags = 1 << 8  //              // ColorPicker: disable bigger color preview on right side of the picker, use small color square preview instead.
+	ColorEditFlagsNoDragDrop     ColorEditFlags = 1 << 9  //              // ColorEdit: disable drag and drop target. ColorButton: disable drag and drop source.
+	ColorEditFlagsNoBorder       ColorEditFlags = 1 << 10 //              // ColorButton: disable border (which is enforced by default)
 
-	// User Options (right-click on widget to change some of them). You can set application defaults using SetColorEditOptions().
-	// The idea is that you probably don't want to override them in most of your calls, let the user choose and/or call
-	// SetColorEditOptions() during startup.
+	// Alpha preview
+	// - Prior to 1.91.8 (2025/01/21): alpha was made opaque in the preview by default using old name ColorEditFlagsAlphaPreview.
+	// - We now display the preview as transparent by default. You can use ColorEditFlagsAlphaOpaque to use old behavior.
+	// - The new flags may be combined better and allow finer controls.
+	ColorEditFlagsAlphaOpaque                    ColorEditFlags = 1 << 11 //              // ColorEdit, ColorPicker, ColorButton: disable alpha in the preview,. Contrary to _NoAlpha it may still be edited when calling ColorEdit4()/ColorPicker4(). For ColorButton() this does the same as _NoAlpha.
+	ColorEditFlagsAlphaNoBg                      ColorEditFlags = 1 << 12 //              // ColorEdit, ColorPicker, ColorButton: disable rendering a checkerboard background behind transparent color.
+	ColorEditFlagsAlphaPreviewHalfColorEditFlags                = 1 << 13 //              // ColorEdit, ColorPicker, ColorButton: display half opaque / half transparent preview.
 
-	// ColorEditFlagsAlphaBar shows vertical alpha bar/gradient in picker.
-	ColorEditFlagsAlphaBar ColorEditFlags = 1 << 16
-	// ColorEditFlagsAlphaPreview displays preview as a transparent color over a checkerboard, instead of opaque.
-	ColorEditFlagsAlphaPreview ColorEditFlags = 1 << 17
-	// ColorEditFlagsAlphaPreviewHalf displays half opaque / half checkerboard, instead of opaque.
-	ColorEditFlagsAlphaPreviewHalf ColorEditFlags = 1 << 18
-	// ColorEditFlagsHDR = (WIP) surrently only disable 0.0f..1.0f limits in RGBA edition.
-	// Note: you probably want to use ImGuiColorEditFlags_Float flag as well.
-	ColorEditFlagsHDR ColorEditFlags = 1 << 19
-	// ColorEditFlagsRGB sets the format as RGB.
-	ColorEditFlagsRGB ColorEditFlags = 1 << 20
-	// ColorEditFlagsHSV sets the format as HSV.
-	ColorEditFlagsHSV ColorEditFlags = 1 << 21
-	// ColorEditFlagsHEX sets the format as HEX.
-	ColorEditFlagsHEX ColorEditFlags = 1 << 22
-	// ColorEditFlagsUint8 _display_ values formatted as 0..255.
-	ColorEditFlagsUint8 ColorEditFlags = 1 << 23
-	// ColorEditFlagsFloat _display_ values formatted as 0.0f..1.0f floats instead of 0..255 integers. No round-trip of value via integers.
-	ColorEditFlagsFloat ColorEditFlags = 1 << 24
+	// User Options (right-click on widget to change some of them).
+	ColorEditFlagsAlphaBar       ColorEditFlags = 1 << 16 //              // ColorEdit, ColorPicker: show vertical alpha bar/gradient in picker.
+	ColorEditFlagsHDR            ColorEditFlags = 1 << 19 //              // (WIP) ColorEdit: Currently only disable 0.0f..1.0f limits in RGBA edition (note: you probably want to use ColorEditFlagsFloat flag as well).
+	ColorEditFlagsDisplayRGB     ColorEditFlags = 1 << 20 // [Display]    // ColorEdit: override _display_ type among RGB/HSV/Hex. ColorPicker: select any combination using one or more of RGB/HSV/Hex.
+	ColorEditFlagsDisplayHSV     ColorEditFlags = 1 << 21 // [Display]    // "
+	ColorEditFlagsDisplayHex     ColorEditFlags = 1 << 22 // [Display]    // "
+	ColorEditFlagsUint8          ColorEditFlags = 1 << 23 // [DataType]   // ColorEdit, ColorPicker, ColorButton: _display_ values formatted as 0..255.
+	ColorEditFlagsFloat          ColorEditFlags = 1 << 24 // [DataType]   // ColorEdit, ColorPicker, ColorButton: _display_ values formatted as 0.0f..1.0f floats instead of 0..255 integers. No round-trip of value via integers.
+	ColorEditFlagsPickerHueBar   ColorEditFlags = 1 << 25 // [Picker]     // ColorPicker: bar for Hue, rectangle for Sat/Value.
+	ColorEditFlagsPickerHueWheel ColorEditFlags = 1 << 26 // [Picker]     // ColorPicker: wheel for Hue, triangle for Sat/Value.
+	ColorEditFlagsInputRGB       ColorEditFlags = 1 << 27 // [Input]      // ColorEdit, ColorPicker: input and output data in RGB format.
+	ColorEditFlagsInputHSV       ColorEditFlags = 1 << 28 // [Input]      // ColorEdit, ColorPicker: input and output data in HSV format.
 
-	// ColorEditFlagsPickerHueBar shows bar for Hue, rectangle for Sat/Value.
-	ColorEditFlagsPickerHueBar ColorEditFlags = 1 << 25
-	// ColorEditFlagsPickerHueWheel shows wheel for Hue, triangle for Sat/Value.
-	ColorEditFlagsPickerHueWheel ColorEditFlags = 1 << 26
-	// ColorEditFlagsInputRGB enables input and output data in RGB format.
-	ColorEditFlagsInputRGB ColorEditFlags = 1 << 27
-	// ColorEditFlagsInputHSV enables input and output data in HSV format.
-	ColorEditFlagsInputHSV ColorEditFlags = 1 << 28
+	// Defaults Options. You can set application defaults using SetColorEditOptions(). The intent is that you probably don't want to
+	// override them in most of your calls. Let the user choose via the option menu and/or call SetColorEditOptions() once during startup.
+	ColorEditFlagsDefaultOptions_ = ColorEditFlagsUint8 | ColorEditFlagsDisplayRGB | ColorEditFlagsInputRGB | ColorEditFlagsPickerHueBar
 )
 
 // ColorEdit3 calls ColorEdit3V(label, col, 0).

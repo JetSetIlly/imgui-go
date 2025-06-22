@@ -3,35 +3,30 @@ package imgui
 // #include "wrapper/Popup.h"
 import "C"
 
-// PopupFlags Flags for OpenPopup*(), BeginPopupContext*(), IsPopupOpen() functions.
-// - To be backward compatible with older API which took an 'int mouse_button = 1' argument, we need to treat
-//   small flags values as a mouse button index, so we encode the mouse button in the first few bits of the flags.
-//   It is therefore guaranteed to be legal to pass a mouse button index in ImGuiPopupFlags.
-// - For the same reason, we exceptionally default the ImGuiPopupFlags argument of BeginPopupContextXXX functions to 1 instead of 0.
-//   IMPORTANT: because the default parameter is 1 (==ImGuiPopupFlags_MouseButtonRight), if you rely on the default parameter
-//   and want to another another flag, you need to pass in the ImGuiPopupFlags_MouseButtonRight flag.
-// - Multiple buttons currently cannot be combined/or-ed in those functions (we could allow it later).
+// Flags for OpenPopup*(), BeginPopupContext*(), IsPopupOpen() functions.
+//   - To be backward compatible with older API which took an 'int mouse_button = 1' argument instead of 'ImGuiPopupFlags flags',
+//     we need to treat small flags values as a mouse button index, so we encode the mouse button in the first few bits of the flags.
+//     It is therefore guaranteed to be legal to pass a mouse button index in ImGuiPopupFlags.
+//   - For the same reason, we exceptionally default the ImGuiPopupFlags argument of BeginPopupContextXXX functions to 1 instead of 0.
+//     IMPORTANT: because the default parameter is 1 (==ImGuiPopupFlags_MouseButtonRight), if you rely on the default parameter
+//     and want to use another flag, you need to pass in the ImGuiPopupFlags_MouseButtonRight flag explicitly.
+//   - Multiple buttons currently cannot be combined/or-ed in those functions (we could allow it later).
 type PopupFlags int
 
 const (
-	// PopupFlagsNone no popup flags apply.
-	PopupFlagsNone PopupFlags = 0
-	// PopupFlagsMouseButtonLeft For BeginPopupContext*(): open on Left Mouse release. Guaranteed to always be == 0 (same as ImGuiMouseButton_Left).
-	PopupFlagsMouseButtonLeft PopupFlags = 0
-	// PopupFlagsMouseButtonRight For BeginPopupContext*(): open on Right Mouse release. Guaranteed to always be == 1 (same as ImGuiMouseButton_Right).
-	PopupFlagsMouseButtonRight PopupFlags = 1
-	// PopupFlagsMouseButtonMiddle For BeginPopupContext*(): open on Middle Mouse release. Guaranteed to always be == 2 (same as ImGuiMouseButton_Middle).
-	PopupFlagsMouseButtonMiddle PopupFlags = 2
-	// PopupFlagsNoOpenOverExistingPopup For OpenPopup*(), BeginPopupContext*(): don't open if there's already a popup at the same level of the popup stack.
-	PopupFlagsNoOpenOverExistingPopup PopupFlags = 1 << 5
-	// PopupFlagsNoOpenOverItems For BeginPopupContextWindow(): don't return true when hovering items, only when hovering empty space.
-	PopupFlagsNoOpenOverItems PopupFlags = 1 << 6
-	// PopupFlagsAnyPopupID For IsPopupOpen(): ignore the ImGuiID parameter and test for any popup.
-	PopupFlagsAnyPopupID PopupFlags = 1 << 7
-	// PopupFlagsAnyPopupLevel For IsPopupOpen(): search/test at any level of the popup stack (default test in the current level).
-	PopupFlagsAnyPopupLevel PopupFlags = 1 << 8
-	// PopupFlagsAnyPopup for any usage.
-	PopupFlagsAnyPopup = PopupFlagsAnyPopupID | PopupFlagsAnyPopupLevel
+	PopupFlagsNone                PopupFlags = 0
+	PopupFlagsMouseButtonLeft     PopupFlags = 0 // For BeginPopupContext*(): open on Left Mouse release. Guaranteed to always be == 0 (same as ImGuiMouseButton_Left)
+	PopupFlagsMouseButtonRight    PopupFlags = 1 // For BeginPopupContext*(): open on Right Mouse release. Guaranteed to always be == 1 (same as ImGuiMouseButton_Right)
+	PopupFlagsMouseButtonMiddle   PopupFlags = 2 // For BeginPopupContext*(): open on Middle Mouse release. Guaranteed to always be == 2 (same as ImGuiMouseButton_Middle)
+	PopupFlagsMouseButtonMask_    PopupFlags = 0x1F
+	PopupFlagsMouseButtonDefault_ PopupFlags = 1
+	PopupFlagsNoReopen            PopupFlags = 1 << 5 // For OpenPopup*(), BeginPopupContext*(): don't reopen same popup if already open (won't reposition, won't reinitialize navigation)
+	//PopupFlagsNoReopenAlwaysNavInit PopupFlags = 1 << 6   // For OpenPopup*(), BeginPopupContext*(): focus and initialize navigation even when not reopening.
+	PopupFlagsNoOpenOverExistingPopup PopupFlags = 1 << 7  // For OpenPopup*(), BeginPopupContext*(): don't open if there's already a popup at the same level of the popup stack
+	PopupFlagsNoOpenOverItems         PopupFlags = 1 << 8  // For BeginPopupContextWindow(): don't return true when hovering items, only when hovering empty space
+	PopupFlagsAnyPopupId              PopupFlags = 1 << 10 // For IsPopupOpen(): ignore the ImGuiID parameter and test for any popup.
+	PopupFlagsAnyPopupLevel           PopupFlags = 1 << 11 // For IsPopupOpen(): search/test at any level of the popup stack (default test in the current level)
+	PopupFlagsAnyPopup                PopupFlags = PopupFlagsAnyPopupId | PopupFlagsAnyPopupLevel
 )
 
 // BeginPopupV returns true if the popup is open, and you can start outputting to it.

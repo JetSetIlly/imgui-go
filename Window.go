@@ -20,65 +20,29 @@ func ShowUserGuide() {
 type WindowFlags int
 
 const (
-	// WindowFlagsNone default = 0.
-	WindowFlagsNone WindowFlags = 0
-	// WindowFlagsNoTitleBar disables title-bar.
-	WindowFlagsNoTitleBar WindowFlags = 1 << 0
-	// WindowFlagsNoResize disables user resizing with the lower-right grip.
-	WindowFlagsNoResize WindowFlags = 1 << 1
-	// WindowFlagsNoMove disables user moving the window.
-	WindowFlagsNoMove WindowFlags = 1 << 2
-	// WindowFlagsNoScrollbar disables scrollbars. Window can still scroll with mouse or programmatically.
-	WindowFlagsNoScrollbar WindowFlags = 1 << 3
-	// WindowFlagsNoScrollWithMouse disables user vertically scrolling with mouse wheel. On child window, mouse wheel
-	// will be forwarded to the parent unless NoScrollbar is also set.
-	WindowFlagsNoScrollWithMouse WindowFlags = 1 << 4
-	// WindowFlagsNoCollapse disables user collapsing window by double-clicking on it.
-	WindowFlagsNoCollapse WindowFlags = 1 << 5
-	// WindowFlagsAlwaysAutoResize resizes every window to its content every frame.
-	WindowFlagsAlwaysAutoResize WindowFlags = 1 << 6
-	// WindowFlagsNoBackground disables drawing background color (WindowBg, etc.) and outside border. Similar as using
-	// SetNextWindowBgAlpha(0.0f).
-	WindowFlagsNoBackground WindowFlags = 1 << 7
-	// WindowFlagsNoSavedSettings will never load/save settings in .ini file.
-	WindowFlagsNoSavedSettings WindowFlags = 1 << 8
-	// WindowFlagsNoMouseInputs disables catching mouse, hovering test with pass through.
-	WindowFlagsNoMouseInputs WindowFlags = 1 << 9
-	// WindowFlagsMenuBar has a menu-bar.
-	WindowFlagsMenuBar WindowFlags = 1 << 10
-	// WindowFlagsHorizontalScrollbar allows horizontal scrollbar to appear (off by default). You may use
-	// SetNextWindowContentSize(ImVec2(width,0.0f)); prior to calling Begin() to specify width. Read code in imgui_demo
-	// in the "Horizontal Scrolling" section.
-	WindowFlagsHorizontalScrollbar WindowFlags = 1 << 11
-	// WindowFlagsNoFocusOnAppearing disables taking focus when transitioning from hidden to visible state.
-	WindowFlagsNoFocusOnAppearing WindowFlags = 1 << 12
-	// WindowFlagsNoBringToFrontOnFocus disables bringing window to front when taking focus. e.g. clicking on it or
-	// programmatically giving it focus.
-	WindowFlagsNoBringToFrontOnFocus WindowFlags = 1 << 13
-	// WindowFlagsAlwaysVerticalScrollbar always shows vertical scrollbar, even if ContentSize.y < Size.y .
-	WindowFlagsAlwaysVerticalScrollbar WindowFlags = 1 << 14
-	// WindowFlagsAlwaysHorizontalScrollbar always shows horizontal scrollbar, even if ContentSize.x < Size.x .
-	WindowFlagsAlwaysHorizontalScrollbar WindowFlags = 1 << 15
-	// WindowFlagsAlwaysUseWindowPadding ensures child windows without border uses style.WindowPadding (ignored by
-	// default for non-bordered child windows, because more convenient).
-	WindowFlagsAlwaysUseWindowPadding WindowFlags = 1 << 16
-	// WindowFlagsNoNavInputs has no gamepad/keyboard navigation within the window.
-	WindowFlagsNoNavInputs WindowFlags = 1 << 18
-	// WindowFlagsNoNavFocus has no focusing toward this window with gamepad/keyboard navigation
-	// (e.g. skipped by CTRL+TAB).
-	WindowFlagsNoNavFocus WindowFlags = 1 << 19
-	// WindowFlagsUnsavedDocument appends '*' to title without affecting the ID, as a convenience to avoid using the
-	// ### operator. When used in a tab/docking context, tab is selected on closure and closure is deferred by one
-	// frame to allow code to cancel the closure (with a confirmation popup, etc.) without flicker.
-	WindowFlagsUnsavedDocument WindowFlags = 1 << 20
-
-	// WindowFlagsNoNav combines WindowFlagsNoNavInputs and WindowFlagsNoNavFocus.
-	WindowFlagsNoNav = WindowFlagsNoNavInputs | WindowFlagsNoNavFocus
-	// WindowFlagsNoDecoration combines WindowFlagsNoTitleBar, WindowFlagsNoResize, WindowFlagsNoScrollbar and
-	// WindowFlagsNoCollapse.
-	WindowFlagsNoDecoration = WindowFlagsNoTitleBar | WindowFlagsNoResize | WindowFlagsNoScrollbar | WindowFlagsNoCollapse
-	// WindowFlagsNoInputs combines WindowFlagsNoMouseInputs, WindowFlagsNoNavInputs and WindowFlagsNoNavFocus.
-	WindowFlagsNoInputs = WindowFlagsNoMouseInputs | WindowFlagsNoNavInputs | WindowFlagsNoNavFocus
+	WindowFlagsNone                      WindowFlags = 0
+	WindowFlagsNoTitleBar                WindowFlags = 1 << 0  // Disable title-bar
+	WindowFlagsNoResize                  WindowFlags = 1 << 1  // Disable user resizing with the lower-right grip
+	WindowFlagsNoMove                    WindowFlags = 1 << 2  // Disable user moving the window
+	WindowFlagsNoScrollbar               WindowFlags = 1 << 3  // Disable scrollbars (window can still scroll with mouse or programmatically)
+	WindowFlagsNoScrollWithMouse         WindowFlags = 1 << 4  // Disable user vertically scrolling with mouse wheel. On child window, mouse wheel will be forwarded to the parent unless NoScrollbar is also set.
+	WindowFlagsNoCollapse                WindowFlags = 1 << 5  // Disable user collapsing window by double-clicking on it. Also referred to as Window Menu Button (e.g. within a docking node).
+	WindowFlagsAlwaysAutoResize          WindowFlags = 1 << 6  // Resize every window to its content every frame
+	WindowFlagsNoBackground              WindowFlags = 1 << 7  // Disable drawing background color (WindowBg, etc.) and outside border. Similar as using SetNextWindowBgAlpha(0.0f).
+	WindowFlagsNoSavedSettings           WindowFlags = 1 << 8  // Never load/save settings in .ini file
+	WindowFlagsNoMouseInputs             WindowFlags = 1 << 9  // Disable catching mouse, hovering test with pass through.
+	WindowFlagsMenuBar                   WindowFlags = 1 << 10 // Has a menu-bar
+	WindowFlagsHorizontalScrollbar       WindowFlags = 1 << 11 // Allow horizontal scrollbar to appear (off by default). You may use SetNextWindowContentSize(ImVec2(width,0.0f)); prior to calling Begin() to specify width. Read code in imgui_demo in the "Horizontal Scrolling" section.
+	WindowFlagsNoFocusOnAppearing        WindowFlags = 1 << 12 // Disable taking focus when transitioning from hidden to visible state
+	WindowFlagsNoBringToFrontOnFocus     WindowFlags = 1 << 13 // Disable bringing window to front when taking focus (e.g. clicking on it or programmatically giving it focus)
+	WindowFlagsAlwaysVerticalScrollbar   WindowFlags = 1 << 14 // Always show vertical scrollbar (even if ContentSize.y < Size.y)
+	WindowFlagsAlwaysHorizontalScrollbar             = 1 << 15 // Always show horizontal scrollbar (even if ContentSize.x < Size.x)
+	WindowFlagsNoNavInputs               WindowFlags = 1 << 16 // No keyboard/gamepad navigation within the window
+	WindowFlagsNoNavFocus                WindowFlags = 1 << 17 // No focusing toward this window with keyboard/gamepad navigation (e.g. skipped by CTRL+TAB)
+	WindowFlagsUnsavedDocument           WindowFlags = 1 << 18 // Display a dot next to the title. When used in a tab/docking context, tab is selected when clicking the X + closure is not assumed (will wait for user to stop submitting the tab). Otherwise closure is assumed when pressing the X, so if you keep submitting the tab may reappear at end of tab bar.
+	WindowFlagsNoNav                     WindowFlags = WindowFlagsNoNavInputs | WindowFlagsNoNavFocus
+	WindowFlagsNoDecoration              WindowFlags = WindowFlagsNoTitleBar | WindowFlagsNoResize | WindowFlagsNoScrollbar | WindowFlagsNoCollapse
+	WindowFlagsNoInputs                  WindowFlags = WindowFlagsNoMouseInputs | WindowFlagsNoNavInputs | WindowFlagsNoNavFocus
 )
 
 // BeginV pushes a new window to the stack and start appending to it.
@@ -243,25 +207,13 @@ func SetNextItemWidth(width float32) {
 type ItemFlags int
 
 const (
-	// ItemFlagsNone default = 0.
-	ItemFlagsNone ItemFlags = 0
-	// ItemFlagsNoTabStop has no tab stop.
-	ItemFlagsNoTabStop ItemFlags = 1 << 0
-	// ItemFlagsButtonRepeat will return true multiple times based on io.KeyRepeatDelay and io.KeyRepeatRate settings.
-	ItemFlagsButtonRepeat ItemFlags = 1 << 1
-	// ItemFlagsDisabled [BETA] disable interactions but doesn't affect visuals yet. See github.com/ocornut/imgui/issues/211.
-	ItemFlagsDisabled ItemFlags = 1 << 2
-	// ItemFlagsNoNav has no nav.
-	ItemFlagsNoNav ItemFlags = 1 << 3
-	// ItemFlagsNoNavDefaultFocus has no nav default focus.
-	ItemFlagsNoNavDefaultFocus ItemFlags = 1 << 4
-	// ItemFlagsSelectableDontClosePopup automatically closes current Popup window.
-	ItemFlagsSelectableDontClosePopup ItemFlags = 1 << 5
-	// ItemFlagsMixedValue [BETA] represent a mixed/indeterminate value, generally multi-selection where values differ.
-	// Currently only supported by Checkbox() (later should support all sorts of widgets).
-	ItemFlagsMixedValue ItemFlags = 1 << 6
-	// ItemFlagsDefault default = 0.
-	ItemFlagsDefault ItemFlags = 0
+	ItemFlagsNone              ItemFlags = 0      // (Default)
+	ItemFlagsNoTabStop         ItemFlags = 1 << 0 // false    // Disable keyboard tabbing. This is a "lighter" version of ItemFlagsNoNav.
+	ItemFlagsNoNav             ItemFlags = 1 << 1 // false    // Disable any form of focusing (keyboard/gamepad directional navigation and SetKeyboardFocusHere() calls).
+	ItemFlagsNoNavDefaultFocus ItemFlags = 1 << 2 // false    // Disable item being a candidate for default focus (e.g. used by title bar items).
+	ItemFlagsButtonRepeat      ItemFlags = 1 << 3 // false    // Any button-like behavior will have repeat mode enabled (based on io.KeyRepeatDelay and io.KeyRepeatRate values). Note that you can also call IsItemActive() after any button to tell if it is being held.
+	ItemFlagsAutoClosePopups   ItemFlags = 1 << 4 // true     // MenuItem()/Selectable() automatically close their parent popup window.
+	ItemFlagsAllowDuplicateId  ItemFlags = 1 << 5 // false    // Allow submitting an item with the same identifier as an item already submitted this frame without triggering a warning tooltip if io.ConfigDebugHighlightIdConflicts is set.
 )
 
 // PushItemFlag changes flags in the existing options for the next items until PopItemFlag() is called.
@@ -303,14 +255,10 @@ type Viewport uintptr
 type ViewportFlags int
 
 const (
-	// ViewportFlagsNone default = 0.
-	ViewportFlagsNone ViewportFlags = 0
-	// ViewportFlagsIsPlatformWindow represents a Platform Window.
-	ViewportFlagsIsPlatformWindow ViewportFlags = 1 << 0
-	// ViewportFlagsIsPlatformMonitor represents a Platform Monitor (unused yet).
-	ViewportFlagsIsPlatformMonitor ViewportFlags = 1 << 1
-	// ViewportFlagsOwnedByApp Platform Window: is created/managed by the application (rather than a dear imgui backend).
-	ViewportFlagsOwnedByApp ViewportFlags = 1 << 2
+	ViewportFlagsNone              ViewportFlags = 0
+	ViewportFlagsIsPlatformWindow  ViewportFlags = 1 << 0 // Represent a Platform Window
+	ViewportFlagsIsPlatformMonitor ViewportFlags = 1 << 1 // Represent a Platform Monitor (unused yet)
+	ViewportFlagsOwnedByApp        ViewportFlags = 1 << 2 // Platform Window: Is created/managed by the application (rather than a dear imgui backend)
 )
 
 // MainViewport returns primary/default viewport.

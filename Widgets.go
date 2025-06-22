@@ -54,14 +54,12 @@ func Button(id string) bool {
 type ButtonFlags int
 
 const (
-	// ButtonFlagsNone is no flag applied.
-	ButtonFlagsNone ButtonFlags = 0
-	// ButtonFlagsMouseButtonLeft reacts on left mouse button (default).
-	ButtonFlagsMouseButtonLeft ButtonFlags = 1 << 0
-	// ButtonFlagsMouseButtonRight reacts on right mouse button.
-	ButtonFlagsMouseButtonRight ButtonFlags = 1 << 1
-	// ButtonFlagsMouseButtonMiddle reacts on center mouse button.
-	ButtonFlagsMouseButtonMiddle ButtonFlags = 1 << 2
+	ButtonFlagsNone              ButtonFlags = 0
+	ButtonFlagsMouseButtonLeft   ButtonFlags = 1 << 0                                                                                  // React on left mouse button (default)
+	ButtonFlagsMouseButtonRight  ButtonFlags = 1 << 1                                                                                  // React on right mouse button
+	ButtonFlagsMouseButtonMiddle ButtonFlags = 1 << 2                                                                                  // React on center mouse button
+	ButtonFlagsMouseButtonMask_  ButtonFlags = ButtonFlagsMouseButtonLeft | ButtonFlagsMouseButtonRight | ButtonFlagsMouseButtonMiddle // [Internal]
+	ButtonFlagsEnableNav         ButtonFlags = 1 << 3                                                                                  // InvisibleButton(): do not disable navigation/tabbing. Otherwise disabled by default.
 )
 
 // InvisibleButtonV returns true if it is clicked.
@@ -185,23 +183,15 @@ func ProgressBar(fraction float32) {
 type ComboFlags int
 
 const (
-	// ComboFlagsNone default = 0.
-	ComboFlagsNone ComboFlags = 0
-	// ComboFlagsPopupAlignLeft aligns the popup toward the left by default.
-	ComboFlagsPopupAlignLeft ComboFlags = 1 << 0
-	// ComboFlagsHeightSmall has max ~4 items visible.
-	// Tip: If you want your combo popup to be a specific size you can use SetNextWindowSizeConstraints() prior to calling BeginCombo().
-	ComboFlagsHeightSmall ComboFlags = 1 << 1
-	// ComboFlagsHeightRegular has max ~8 items visible (default).
-	ComboFlagsHeightRegular ComboFlags = 1 << 2
-	// ComboFlagsHeightLarge has max ~20 items visible.
-	ComboFlagsHeightLarge ComboFlags = 1 << 3
-	// ComboFlagsHeightLargest has as many fitting items as possible.
-	ComboFlagsHeightLargest ComboFlags = 1 << 4
-	// ComboFlagsNoArrowButton displays on the preview box without the square arrow button.
-	ComboFlagsNoArrowButton ComboFlags = 1 << 5
-	// ComboFlagsNoPreview displays only a square arrow button.
-	ComboFlagsNoPreview ComboFlags = 1 << 6
+	ComboFlagsNone            ComboFlags = 0
+	ComboFlagsPopupAlignLeft  ComboFlags = 1 << 0 // Align the popup toward the left by default
+	ComboFlagsHeightSmall     ComboFlags = 1 << 1 // Max ~4 items visible. Tip: If you want your combo popup to be a specific size you can use SetNextWindowSizeConstraints() prior to calling BeginCombo()
+	ComboFlagsHeightRegular   ComboFlags = 1 << 2 // Max ~8 items visible (default)
+	ComboFlagsHeightLarge     ComboFlags = 1 << 3 // Max ~20 items visible
+	ComboFlagsHeightLargest   ComboFlags = 1 << 4 // As many fitting items as possible
+	ComboFlagsNoArrowButton   ComboFlags = 1 << 5 // Display on the preview box without the square arrow button
+	ComboFlagsNoPreview       ComboFlags = 1 << 6 // Display only a square arrow button
+	ComboFlagsWidthFitPreview ComboFlags = 1 << 7 // Width dynamically calculated from preview contents
 )
 
 // BeginComboV creates a combo box with complete control over the content to the user.
@@ -248,16 +238,15 @@ func ComboV(id string, value *int32, list []string, heightInItems int) bool {
 type SliderFlags int
 
 const (
-	// SliderFlagsNone is no flag applied.
-	SliderFlagsNone SliderFlags = 0
-	// SliderFlagsAlwaysClamp clamps value to min/max bounds when input manually with CTRL+Click. By default CTRL+Click allows going out of bounds.
-	SliderFlagsAlwaysClamp SliderFlags = 1 << 4
-	// SliderFlagsLogarithmic makes the widget logarithmic (linear otherwise). Consider using SliderFlagNoRoundToFormat with this if using a format-string with small amount of digits.
-	SliderFlagsLogarithmic SliderFlags = 1 << 5
-	// SliderFlagsNoRoundToFormat disables rounding underlying value to match precision of the display format string (e.g. %.3f values are rounded to those 3 digits).
-	SliderFlagsNoRoundToFormat SliderFlags = 1 << 6
-	// SliderFlagsNoInput disables CTRL+Click or Enter key allowing to input text directly into the widget.
-	SliderFlagsNoInput SliderFlags = 1 << 7
+	SliderFlagsNone            SliderFlags = 0
+	SliderFlagsLogarithmic     SliderFlags = 1 << 5  // Make the widget logarithmic (linear otherwise). Consider using SliderFlagsNoRoundToFormat with this if using a format-string with small amount of digits.
+	SliderFlagsNoRoundToFormat SliderFlags = 1 << 6  // Disable rounding underlying value to match precision of the display format string (e.g. %.3f values are rounded to those 3 digits).
+	SliderFlagsNoInput         SliderFlags = 1 << 7  // Disable CTRL+Click or Enter key allowing to input text directly into the widget.
+	SliderFlagsWrapAround      SliderFlags = 1 << 8  // Enable wrapping around from max to min and from min to max. Only supported by DragXXX() functions for now.
+	SliderFlagsClampOnInput    SliderFlags = 1 << 9  // Clamp value to min/max bounds when input manually with CTRL+Click. By default CTRL+Click allows going out of bounds.
+	SliderFlagsClampZeroRange  SliderFlags = 1 << 10 // Clamp even if min==max==0.0f. Otherwise due to legacy reason DragXXX functions don't clamp with those values. When your clamping limits are dynamic you almost always want to use it.
+	SliderFlagsNoSpeedTweaks   SliderFlags = 1 << 11 // Disable keyboard modifiers altering tweak speed. Useful if you want to alter tweak speed yourself based on your own logic.
+	SliderFlagsAlwaysClamp     SliderFlags = SliderFlagsClampOnInput | SliderFlagsClampZeroRange
 )
 
 // DragFloatV creates a draggable slider for floats.
@@ -582,54 +571,40 @@ func VSliderInt(label string, size Vec2, value *int32, min, max int32) bool {
 type InputTextFlags int
 
 const (
-	// InputTextFlagsNone sets everything default.
-	InputTextFlagsNone InputTextFlags = 0
-	// InputTextFlagsCharsDecimal allows 0123456789.+-.
-	InputTextFlagsCharsDecimal InputTextFlags = 1 << 0
-	// InputTextFlagsCharsHexadecimal allow 0123456789ABCDEFabcdef.
-	InputTextFlagsCharsHexadecimal InputTextFlags = 1 << 1
-	// InputTextFlagsCharsUppercase turns a..z into A..Z.
-	InputTextFlagsCharsUppercase InputTextFlags = 1 << 2
-	// InputTextFlagsCharsNoBlank filters out spaces, tabs.
-	InputTextFlagsCharsNoBlank InputTextFlags = 1 << 3
-	// InputTextFlagsAutoSelectAll selects entire text when first taking mouse focus.
-	InputTextFlagsAutoSelectAll InputTextFlags = 1 << 4
-	// InputTextFlagsEnterReturnsTrue returns 'true' when Enter is pressed (as opposed to when the value was modified).
-	InputTextFlagsEnterReturnsTrue InputTextFlags = 1 << 5
-	// InputTextFlagsCallbackCompletion for callback on pressing TAB (for completion handling).
-	InputTextFlagsCallbackCompletion InputTextFlags = 1 << 6
-	// InputTextFlagsCallbackHistory for callback on pressing Up/Down arrows (for history handling).
-	InputTextFlagsCallbackHistory InputTextFlags = 1 << 7
-	// InputTextFlagsCallbackAlways for callback on each iteration. User code may query cursor position, modify text buffer.
-	InputTextFlagsCallbackAlways InputTextFlags = 1 << 8
-	// InputTextFlagsCallbackCharFilter for callback on character inputs to replace or discard them.
-	// Modify 'EventChar' to replace or discard, or return 1 in callback to discard.
-	InputTextFlagsCallbackCharFilter InputTextFlags = 1 << 9
-	// InputTextFlagsAllowTabInput when pressing TAB to input a '\t' character into the text field.
-	InputTextFlagsAllowTabInput InputTextFlags = 1 << 10
-	// InputTextFlagsCtrlEnterForNewLine in multi-line mode, unfocus with Enter, add new line with Ctrl+Enter
-	// (default is opposite: unfocus with Ctrl+Enter, add line with Enter).
-	InputTextFlagsCtrlEnterForNewLine InputTextFlags = 1 << 11
-	// InputTextFlagsNoHorizontalScroll disables following the cursor horizontally.
-	InputTextFlagsNoHorizontalScroll InputTextFlags = 1 << 12
-	// InputTextFlagsAlwaysInsertMode was renamed to InputTextFlagsAlwaysOverwriteMode to reflect its actual behavior and will be removed in v5.
-	// Deprecated: Use InputTextFlagsAlwaysOverwriteMode.
-	InputTextFlagsAlwaysInsertMode InputTextFlags = 1 << 13
-	// InputTextFlagsAlwaysOverwriteMode sets overwrite mode.
-	InputTextFlagsAlwaysOverwriteMode InputTextFlags = 1 << 13
-	// InputTextFlagsReadOnly sets read-only mode.
-	InputTextFlagsReadOnly InputTextFlags = 1 << 14
-	// InputTextFlagsPassword sets password mode, display all characters as '*'.
-	InputTextFlagsPassword InputTextFlags = 1 << 15
-	// InputTextFlagsNoUndoRedo disables undo/redo. Note that input text owns the text data while active,
-	// if you want to provide your own undo/redo stack you need e.g. to call ClearActiveID().
-	InputTextFlagsNoUndoRedo InputTextFlags = 1 << 16
-	// InputTextFlagsCharsScientific allows 0123456789.+-*/eE (Scientific notation input).
-	InputTextFlagsCharsScientific InputTextFlags = 1 << 17
-	// inputTextFlagsCallbackResize for callback on buffer capacity change requests.
-	inputTextFlagsCallbackResize InputTextFlags = 1 << 18
-	// ImGuiInputTextFlagsCallbackEdit for callback on any edit (note that InputText() already returns true on edit, the callback is useful mainly to manipulate the underlying buffer while focus is active).
-	ImGuiInputTextFlagsCallbackEdit InputTextFlags = 1 << 19
+	// Basic filters (also see ImGuiInputTextFlags_CallbackCharFilter)
+	InputTextFlagsNone             InputTextFlags = 0
+	InputTextFlagsCharsDecimal     InputTextFlags = 1 << 0 // Allow 0123456789.+-*/
+	InputTextFlagsCharsHexadecimal InputTextFlags = 1 << 1 // Allow 0123456789ABCDEFabcdef
+	InputTextFlagsCharsScientific  InputTextFlags = 1 << 2 // Allow 0123456789.+-*/eE (Scientific notation input)
+	InputTextFlagsCharsUppercase   InputTextFlags = 1 << 3 // Turn a..z into A..Z
+	InputTextFlagsCharsNoBlank     InputTextFlags = 1 << 4 // Filter out spaces, tabs
+
+	// Inputs
+	InputTextFlagsAllowTabInput       InputTextFlags = 1 << 5 // Pressing TAB input a '\t' character into the text field
+	InputTextFlagsEnterReturnsTrue    InputTextFlags = 1 << 6 // Return 'true' when Enter is pressed (as opposed to every time the value was modified). Consider using IsItemDeactivatedAfterEdit() instead!
+	InputTextFlagsEscapeClearsAll     InputTextFlags = 1 << 7 // Escape key clears content if not empty, and deactivate otherwise (contrast to default behavior of Escape to revert)
+	InputTextFlagsCtrlEnterForNewLine InputTextFlags = 1 << 8 // In multi-line mode, validate with Enter, add new line with Ctrl+Enter (default is opposite: validate with Ctrl+Enter, add line with Enter).
+
+	// Other options
+	InputTextFlagsReadOnly           InputTextFlags = 1 << 9  // Read-only mode
+	InputTextFlagsPassword           InputTextFlags = 1 << 10 // Password mode, display all characters as '*', disable copy
+	InputTextFlagsAlwaysOverwrite    InputTextFlags = 1 << 11 // Overwrite mode
+	InputTextFlagsAutoSelectAll      InputTextFlags = 1 << 12 // Select entire text when first taking mouse focus
+	InputTextFlagsParseEmptyRefVal   InputTextFlags = 1 << 13 // InputFloat(), InputInt(), InputScalar() etc. only: parse empty string as zero value.
+	InputTextFlagsDisplayEmptyRefVal InputTextFlags = 1 << 14 // InputFloat(), InputInt(), InputScalar() etc. only: when value is zero, do not display it. Generally used with InputTextFlagsParseEmptyRefVal.
+	InputTextFlagsNoHorizontalScroll InputTextFlags = 1 << 15 // Disable following the cursor horizontally
+	InputTextFlagsNoUndoRedo         InputTextFlags = 1 << 16 // Disable undo/redo. Note that input text owns the text data while active, if you want to provide your own undo/redo stack you need e.g. to call ClearActiveID().
+
+	// Elide display / Alignment
+	InputTextFlagsElideLeft InputTextFlags = 1 << 17 // When text doesn't fit, elide left side to ensure right side stays visible. Useful for path/filenames. Single-line only!
+
+	// Callback features
+	InputTextFlagsCallbackCompletion InputTextFlags = 1 << 18 // Callback on pressing TAB (for completion handling)
+	InputTextFlagsCallbackHistory    InputTextFlags = 1 << 19 // Callback on pressing Up/Down arrows (for history handling)
+	InputTextFlagsCallbackAlways     InputTextFlags = 1 << 20 // Callback on each iteration. User code may query cursor position, modify text buffer.
+	InputTextFlagsCallbackCharFilter InputTextFlags = 1 << 21 // Callback on character inputs to replace or discard them. Modify 'EventChar' to replace or discard, or return 1 in callback to discard.
+	InputTextFlagsCallbackResize     InputTextFlags = 1 << 22 // Callback on buffer capacity changes request (beyond 'buf_size' parameter value), allowing the string to grow. Notify when the string wants to be resized (for string types which hold a cache of their Size). You will be provided a new BufSize in the callback and NEED to honor it. (see misc/cpp/imgui_stdlib.h for an example of using this)
+	InputTextFlagsCallbackEdit       InputTextFlags = 1 << 23 // Callback on any edit. Note that InputText() already returns true on edit + you can always use IsItemEdited(). The callback is useful to manipulate the underlying buffer while focus is active.
 )
 
 // InputTextV creates a text field for dynamic text input.
@@ -685,7 +660,7 @@ func inputTextSingleline(label string, hint *string, text *string, flags InputTe
 	}()
 
 	return C.iggInputTextSingleline(labelArg, hintArg, (*C.char)(state.buf.ptr), C.uint(state.buf.size),
-		C.int(flags|inputTextFlagsCallbackResize), state.key) != 0
+		C.int(flags|InputTextFlagsCallbackResize), state.key) != 0
 }
 
 // InputTextMultilineV provides a field for dynamic text input of multiple lines.
@@ -710,7 +685,7 @@ func InputTextMultilineV(label string, text *string, size Vec2, flags InputTextF
 	}()
 
 	return C.iggInputTextMultiline(labelArg, (*C.char)(state.buf.ptr), C.uint(state.buf.size), sizeArg,
-		C.int(flags|inputTextFlagsCallbackResize), state.key) != 0
+		C.int(flags|InputTextFlagsCallbackResize), state.key) != 0
 }
 
 // InputTextMultiline calls InputTextMultilineV(label, text, Vec2{0,0}, 0, nil).
@@ -749,46 +724,26 @@ func CollapsingHeaderV(label string, flags TreeNodeFlags) bool {
 type TreeNodeFlags int
 
 const (
-	// TreeNodeFlagsNone default = 0.
-	TreeNodeFlagsNone TreeNodeFlags = 0
-	// TreeNodeFlagsSelected draws as selected.
-	TreeNodeFlagsSelected TreeNodeFlags = 1 << 0
-	// TreeNodeFlagsFramed draws frame with background (e.g. for CollapsingHeader).
-	TreeNodeFlagsFramed TreeNodeFlags = 1 << 1
-	// TreeNodeFlagsAllowItemOverlap hit testing to allow subsequent widgets to overlap this one.
-	TreeNodeFlagsAllowItemOverlap TreeNodeFlags = 1 << 2
-	// TreeNodeFlagsNoTreePushOnOpen doesn't do a TreePush() when open
-	// (e.g. for CollapsingHeader) = no extra indent nor pushing on ID stack.
-	TreeNodeFlagsNoTreePushOnOpen TreeNodeFlags = 1 << 3
-	// TreeNodeFlagsNoAutoOpenOnLog doesn't automatically and temporarily open node when Logging is active
-	// (by default logging will automatically open tree nodes).
-	TreeNodeFlagsNoAutoOpenOnLog TreeNodeFlags = 1 << 4
-	// TreeNodeFlagsDefaultOpen defaults node to be open.
-	TreeNodeFlagsDefaultOpen TreeNodeFlags = 1 << 5
-	// TreeNodeFlagsOpenOnDoubleClick needs double-click to open node.
-	TreeNodeFlagsOpenOnDoubleClick TreeNodeFlags = 1 << 6
-	// TreeNodeFlagsOpenOnArrow opens only when clicking on the arrow part.
-	// If TreeNodeFlagsOpenOnDoubleClick is also set, single-click arrow or double-click all box to open.
-	TreeNodeFlagsOpenOnArrow TreeNodeFlags = 1 << 7
-	// TreeNodeFlagsLeaf allows no collapsing, no arrow (use as a convenience for leaf nodes).
-	TreeNodeFlagsLeaf TreeNodeFlags = 1 << 8
-	// TreeNodeFlagsBullet displays a bullet instead of an arrow.
-	TreeNodeFlagsBullet TreeNodeFlags = 1 << 9
-	// TreeNodeFlagsFramePadding uses FramePadding (even for an unframed text node) to
-	// vertically align text baseline to regular widget height. Equivalent to calling AlignTextToFramePadding().
-	TreeNodeFlagsFramePadding TreeNodeFlags = 1 << 10
-	// TreeNodeFlagsSpanAvailWidth extends hit box to the right-most edge, even if not framed.
-	// This is not the default in order to allow adding other items on the same line.
-	// In the future we may refactor the hit system to be front-to-back, allowing natural overlaps
-	// and then this can become the default.
-	TreeNodeFlagsSpanAvailWidth TreeNodeFlags = 1 << 11
-	// TreeNodeFlagsSpanFullWidth extends hit box to the left-most and right-most edges (bypass the indented area).
-	TreeNodeFlagsSpanFullWidth TreeNodeFlags = 1 << 12
-	// TreeNodeFlagsNavLeftJumpsBackHere (WIP) Nav: left direction may move to this TreeNode() from any of its child
-	// (items submitted between TreeNode and TreePop).
-	TreeNodeFlagsNavLeftJumpsBackHere TreeNodeFlags = 1 << 13
-	// TreeNodeFlagsCollapsingHeader combines TreeNodeFlagsFramed and TreeNodeFlagsNoAutoOpenOnLog.
-	TreeNodeFlagsCollapsingHeader = TreeNodeFlagsFramed | TreeNodeFlagsNoTreePushOnOpen | TreeNodeFlagsNoAutoOpenOnLog
+	TreeNodeFlagsNone                TreeNodeFlags = 0
+	TreeNodeFlagsSelected            TreeNodeFlags = 1 << 0  // Draw as selected
+	TreeNodeFlagsFramed              TreeNodeFlags = 1 << 1  // Draw frame with background (e.g. for CollapsingHeader)
+	TreeNodeFlagsAllowOverlap        TreeNodeFlags = 1 << 2  // Hit testing to allow subsequent widgets to overlap this one
+	TreeNodeFlagsNoTreePushOnOpen    TreeNodeFlags = 1 << 3  // Don't do a TreePush() when open (e.g. for CollapsingHeader) = no extra indent nor pushing on ID stack
+	TreeNodeFlagsNoAutoOpenOnLog     TreeNodeFlags = 1 << 4  // Don't automatically and temporarily open node when Logging is active (by default logging will automatically open tree nodes)
+	TreeNodeFlagsDefaultOpen         TreeNodeFlags = 1 << 5  // Default node to be open
+	TreeNodeFlagsOpenOnDoubleClick   TreeNodeFlags = 1 << 6  // Open on double-click instead of simple click (default for multi-select unless any _OpenOnXXX behavior is set explicitly). Both behaviors may be combined.
+	TreeNodeFlagsOpenOnArrow         TreeNodeFlags = 1 << 7  // Open when clicking on the arrow part (default for multi-select unless any _OpenOnXXX behavior is set explicitly). Both behaviors may be combined.
+	TreeNodeFlagsLeaf                TreeNodeFlags = 1 << 8  // No collapsing, no arrow (use as a convenience for leaf nodes).
+	TreeNodeFlagsBullet              TreeNodeFlags = 1 << 9  // Display a bullet instead of arrow. IMPORTANT: node can still be marked open/close if you don't set the _Leaf flag!
+	TreeNodeFlagsFramePadding        TreeNodeFlags = 1 << 10 // Use FramePadding (even for an unframed text node) to vertically align text baseline to regular widget height. Equivalent to calling AlignTextToFramePadding() before the node.
+	TreeNodeFlagsSpanAvailWidth      TreeNodeFlags = 1 << 11 // Extend hit box to the right-most edge, even if not framed. This is not the default in order to allow adding other items on the same line without using AllowOverlap mode.
+	TreeNodeFlagsSpanFullWidth       TreeNodeFlags = 1 << 12 // Extend hit box to the left-most and right-most edges (cover the indent area).
+	TreeNodeFlagsSpanLabelWidth      TreeNodeFlags = 1 << 13 // Narrow hit box + narrow hovering highlight, will only cover the label text.
+	TreeNodeFlagsSpanAllColumns      TreeNodeFlags = 1 << 14 // Frame will span all columns of its container table (label will still fit in current column)
+	TreeNodeFlagsLabelSpanAllColumns TreeNodeFlags = 1 << 15 // Label will span all columns of its container table
+	//TreeNodeFlagsNoScrollOnOpen     TreeNodeFlags = 1 << 16  // FIXME: TODO: Disable automatic scroll on TreePop() if node got just open and contents is not visible
+	TreeNodeFlagsNavLeftJumpsBackHere TreeNodeFlags = 1 << 17 // (WIP) Nav: left direction may move to this TreeNode() from any of its child (items submitted between TreeNode and TreePop)
+	TreeNodeFlagsCollapsingHeader     TreeNodeFlags = TreeNodeFlagsFramed | TreeNodeFlagsNoTreePushOnOpen | TreeNodeFlagsNoAutoOpenOnLog
 )
 
 // TreeNodeV returns true if the tree branch is to be rendered. Call TreePop() in this case.
@@ -827,18 +782,13 @@ func TreeNodeToLabelSpacing() float32 {
 type SelectableFlags int
 
 const (
-	// SelectableFlagsNone default = 0.
-	SelectableFlagsNone SelectableFlags = 0
-	// SelectableFlagsDontClosePopups makes clicking the selectable not close any parent popup windows.
-	SelectableFlagsDontClosePopups SelectableFlags = 1 << 0
-	// SelectableFlagsSpanAllColumns allows the selectable frame to span all columns (text will still fit in current column).
-	SelectableFlagsSpanAllColumns SelectableFlags = 1 << 1
-	// SelectableFlagsAllowDoubleClick generates press events on double clicks too.
-	SelectableFlagsAllowDoubleClick SelectableFlags = 1 << 2
-	// SelectableFlagsDisabled disallows selection and displays text in a greyed out color.
-	SelectableFlagsDisabled SelectableFlags = 1 << 3
-	// SelectableFlagsAllowItemOverlap hit testing to allow subsequent widgets to overlap this one (WIP).
-	SelectableFlagsAllowItemOverlap SelectableFlags = 1 << 4
+	SelectableFlagsNone              SelectableFlags = 0
+	SelectableFlagsNoAutoClosePopups SelectableFlags = 1 << 0 // Clicking this doesn't close parent popup window (overrides ImGuiItemFlags_AutoClosePopups)
+	SelectableFlagsSpanAllColumns    SelectableFlags = 1 << 1 // Frame will span all columns of its container table (text will still fit in current column)
+	SelectableFlagsAllowDoubleClick  SelectableFlags = 1 << 2 // Generate press events on double clicks too
+	SelectableFlagsDisabled          SelectableFlags = 1 << 3 // Cannot be selected, display grayed out text
+	SelectableFlagsAllowOverlap      SelectableFlags = 1 << 4 // (WIP) Hit testing to allow subsequent widgets to overlap this one
+	SelectableFlagsHighlight         SelectableFlags = 1 << 5 // Make the item be displayed as if it is hovered
 )
 
 // SelectableV returns true if the user clicked it, so you can modify your selection state.
@@ -1132,32 +1082,18 @@ func ColumnsCount() int {
 type TabBarFlags int
 
 const (
-	// TabBarFlagsNone default = 0.
-	TabBarFlagsNone TabBarFlags = 0
-	// TabBarFlagsReorderable Allow manually dragging tabs to re-order them + New tabs are appended at the end of list.
-	TabBarFlagsReorderable TabBarFlags = 1 << 0
-	// TabBarFlagsAutoSelectNewTabs Automatically select new tabs when they appear.
-	TabBarFlagsAutoSelectNewTabs TabBarFlags = 1 << 1
-	// TabBarFlagsTabListPopupButton Disable buttons to open the tab list popup.
-	TabBarFlagsTabListPopupButton TabBarFlags = 1 << 2
-	// TabBarFlagsNoCloseWithMiddleMouseButton Disable behavior of closing tabs (that are submitted with p_open != NULL)
-	// with middle mouse button. You can still repro this behavior on user's side with if
-	// (IsItemHovered() && IsMouseClicked(2)) *p_open = false.
-	TabBarFlagsNoCloseWithMiddleMouseButton TabBarFlags = 1 << 3
-	// TabBarFlagsNoTabListScrollingButtons Disable scrolling buttons (apply when fitting policy is
-	// TabBarFlagsFittingPolicyScroll).
-	TabBarFlagsNoTabListScrollingButtons TabBarFlags = 1 << 4
-	// TabBarFlagsNoTooltip Disable tooltips when hovering a tab.
-	TabBarFlagsNoTooltip TabBarFlags = 1 << 5
-	// TabBarFlagsFittingPolicyResizeDown Resize tabs when they don't fit.
-	TabBarFlagsFittingPolicyResizeDown TabBarFlags = 1 << 6
-	// TabBarFlagsFittingPolicyScroll Add scroll buttons when tabs don't fit.
-	TabBarFlagsFittingPolicyScroll TabBarFlags = 1 << 7
-	// TabBarFlagsFittingPolicyMask combines
-	// TabBarFlagsFittingPolicyResizeDown and TabBarFlagsFittingPolicyScroll.
-	TabBarFlagsFittingPolicyMask = TabBarFlagsFittingPolicyResizeDown | TabBarFlagsFittingPolicyScroll
-	// TabBarFlagsFittingPolicyDefault alias for TabBarFlagsFittingPolicyResizeDown.
-	TabBarFlagsFittingPolicyDefault = TabBarFlagsFittingPolicyResizeDown
+	TabBarFlagsNone                         TabBarFlags = 0
+	TabBarFlagsReorderable                  TabBarFlags = 1 << 0 // Allow manually dragging tabs to re-order them + New tabs are appended at the end of list
+	TabBarFlagsAutoSelectNewTabs            TabBarFlags = 1 << 1 // Automatically select new tabs when they appear
+	TabBarFlagsTabListPopupButton           TabBarFlags = 1 << 2 // Disable buttons to open the tab list popup
+	TabBarFlagsNoCloseWithMiddleMouseButton TabBarFlags = 1 << 3 // Disable behavior of closing tabs (that are submitted with p_open != NULL) with middle mouse button. You may handle this behavior manually on user's side with if (IsItemHovered() && IsMouseClicked(2)) *p_open = false.
+	TabBarFlagsNoTabListScrollingButtons    TabBarFlags = 1 << 4 // Disable scrolling buttons (apply when fitting policy is TabBarFlagsFittingPolicyScroll)
+	TabBarFlagsNoTooltip                    TabBarFlags = 1 << 5 // Disable tooltips when hovering a tab
+	TabBarFlagsDrawSelectedOverline         TabBarFlags = 1 << 6 // Draw selected overline markers over selected tab
+	TabBarFlagsFittingPolicyResizeDown      TabBarFlags = 1 << 7 // Resize tabs when they don't fit
+	TabBarFlagsFittingPolicyScroll          TabBarFlags = 1 << 8 // Add scroll buttons when tabs don't fit
+	TabBarFlagsFittingPolicyMask            TabBarFlags = TabBarFlagsFittingPolicyResizeDown | TabBarFlagsFittingPolicyScroll
+	TabBarFlagsFittingPolicyDefault         TabBarFlags = TabBarFlagsFittingPolicyResizeDown
 )
 
 // BeginTabBarV create and append into a TabBar.
@@ -1182,28 +1118,16 @@ func EndTabBar() {
 type TabItemFlags int
 
 const (
-	// TabItemFlagsNone default = 0.
-	TabItemFlagsNone TabItemFlags = 0
-	// TabItemFlagsUnsavedDocument Append '*' to title without affecting the ID, as a convenience to avoid using the
-	// ### operator. Also: tab is selected on closure and closure is deferred by one frame to allow code to undo it
-	// without flicker.
-	TabItemFlagsUnsavedDocument TabItemFlags = 1 << 0
-	// TabItemFlagsSetSelected Trigger flag to programmatically make the tab selected when calling BeginTabItem().
-	TabItemFlagsSetSelected TabItemFlags = 1 << 1
-	// TabItemFlagsNoCloseWithMiddleMouseButton  Disable behavior of closing tabs (that are submitted with
-	// p_open != NULL) with middle mouse button. You can still repro this behavior on user's side with if
-	// (IsItemHovered() && IsMouseClicked(2)) *p_open = false.
-	TabItemFlagsNoCloseWithMiddleMouseButton TabItemFlags = 1 << 2
-	// TabItemFlagsNoPushID Don't call PushID(tab->ID)/PopID() on BeginTabItem()/EndTabItem().
-	TabItemFlagsNoPushID TabItemFlags = 1 << 3
-	// TabItemFlagsNoTooltip Disable tooltip for the given tab.
-	TabItemFlagsNoTooltip TabItemFlags = 1 << 4
-	// TabItemFlagsNoReorder Disable reordering this tab or having another tab cross over this tab.
-	TabItemFlagsNoReorder TabItemFlags = 1 << 5
-	// TabItemFlagsLeading Enforce the tab position to the left of the tab bar (after the tab list popup button).
-	TabItemFlagsLeading TabItemFlags = 1 << 6
-	// TabItemFlagsTrailing Enforce the tab position to the right of the tab bar (before the scrolling buttons).
-	TabItemFlagsTrailing TabItemFlags = 1 << 7
+	TabItemFlagsNone                         TabItemFlags = 0
+	TabItemFlagsUnsavedDocument              TabItemFlags = 1 << 0 // Display a dot next to the title + set TabItemFlagsNoAssumedClosure.
+	TabItemFlagsSetSelected                  TabItemFlags = 1 << 1 // Trigger flag to programmatically make the tab selected when calling BeginTabItem()
+	TabItemFlagsNoCloseWithMiddleMouseButton TabItemFlags = 1 << 2 // Disable behavior of closing tabs (that are submitted with p_open != NULL) with middle mouse button. You may handle this behavior manually on user's side with if (IsItemHovered() && IsMouseClicked(2)) *p_open = false.
+	TabItemFlagsNoPushId                     TabItemFlags = 1 << 3 // Don't call PushID()/PopID() on BeginTabItem()/EndTabItem()
+	TabItemFlagsNoTooltip                    TabItemFlags = 1 << 4 // Disable tooltip for the given tab
+	TabItemFlagsNoReorder                    TabItemFlags = 1 << 5 // Disable reordering this tab or having another tab cross over this tab
+	TabItemFlagsLeading                      TabItemFlags = 1 << 6 // Enforce the tab position to the left of the tab bar (after the tab list popup button)
+	TabItemFlagsTrailing                     TabItemFlags = 1 << 7 // Enforce the tab position to the right of the tab bar (before the scrolling buttons)
+	TabItemFlagsNoAssumedClosure             TabItemFlags = 1 << 8 // Tab is selected when trying to close + closure is not immediately assumed (will wait for user to stop submitting the tab). Otherwise closure is assumed when pressing the X, so if you keep submitting the tab may reappear at end of tab bar.
 )
 
 // BeginTabItemV create a Tab. Returns true if the Tab is selected.

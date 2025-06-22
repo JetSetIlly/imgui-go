@@ -210,38 +210,16 @@ func (io IO) SetIniFilename(value string) {
 type ConfigFlags int
 
 const (
-	// ConfigFlagsNone default = 0.
-	ConfigFlagsNone ConfigFlags = 0
-	// ConfigFlagsNavEnableKeyboard main keyboard navigation enable flag. NewFrame() will automatically fill
-	// io.NavInputs[] based on io.KeysDown[].
-	ConfigFlagsNavEnableKeyboard ConfigFlags = 1 << 0
-	// ConfigFlagsNavEnableGamepad main gamepad navigation enable flag.
-	// This is mostly to instruct your imgui back-end to fill io.NavInputs[]. Back-end also needs to set
-	// BackendFlagHasGamepad.
-	ConfigFlagsNavEnableGamepad ConfigFlags = 1 << 1
-	// ConfigFlagsNavEnableSetMousePos instruct navigation to move the mouse cursor. May be useful on TV/console systems
-	// where moving a virtual mouse is awkward. Will update io.MousePos and set io.WantSetMousePos=true. If enabled you
-	// MUST honor io.WantSetMousePos requests in your binding, otherwise ImGui will react as if the mouse is jumping
-	// around back and forth.
-	ConfigFlagsNavEnableSetMousePos ConfigFlags = 1 << 2
-	// ConfigFlagsNavNoCaptureKeyboard instruct navigation to not set the io.WantCaptureKeyboard flag when io.NavActive
-	// is set.
-	ConfigFlagsNavNoCaptureKeyboard ConfigFlags = 1 << 3
-	// ConfigFlagsNoMouse instruct imgui to clear mouse position/buttons in NewFrame(). This allows ignoring the mouse
-	// information set by the back-end.
-	ConfigFlagsNoMouse ConfigFlags = 1 << 4
-	// ConfigFlagsNoMouseCursorChange instruct back-end to not alter mouse cursor shape and visibility. Use if the
-	// back-end cursor changes are interfering with yours and you don't want to use SetMouseCursor() to change mouse
-	// cursor. You may want to honor requests from imgui by reading GetMouseCursor() yourself instead.
-	ConfigFlagsNoMouseCursorChange ConfigFlags = 1 << 5
+	ConfigFlagsNone                ConfigFlags = 0
+	ConfigFlagsNavEnableKeyboard   ConfigFlags = 1 << 0 // Master keyboard navigation enable flag. Enable full Tabbing + directional arrows + space/enter to activate.
+	ConfigFlagsNavEnableGamepad    ConfigFlags = 1 << 1 // Master gamepad navigation enable flag. Backend also needs to set ImGuiBackendFlags_HasGamepad.
+	ConfigFlagsNoMouse             ConfigFlags = 1 << 4 // Instruct dear imgui to disable mouse inputs and interactions.
+	ConfigFlagsNoMouseCursorChange ConfigFlags = 1 << 5 // Instruct backend to not alter mouse cursor shape and visibility. Use if the backend cursor changes are interfering with yours and you don't want to use SetMouseCursor() to change mouse cursor. You may want to honor requests from imgui by reading GetMouseCursor() yourself instead.
+	ConfigFlagsNoKeyboard          ConfigFlags = 1 << 6 // Instruct dear imgui to disable keyboard inputs and interactions. This is done by ignoring keyboard events and clearing existing states.
 
-	// User storage (to allow your back-end/engine to communicate to code that may be shared between multiple projects.
-	// Those flags are not used by core Dear ImGui).
-
-	// ConfigFlagsIsSRGB application is SRGB-aware.
-	ConfigFlagsIsSRGB ConfigFlags = 1 << 20
-	// ConfigFlagsIsTouchScreen application is using a touch screen instead of a mouse.
-	ConfigFlagsIsTouchScreen ConfigFlags = 1 << 21
+	// User storage (to allow your backend/engine to communicate to code that may be shared between multiple projects. Those flags are NOT used by core Dear ImGui)
+	ConfigFlagsIsSRGB        ConfigFlags = 1 << 20 // Application is SRGB-aware.
+	ConfigFlagsIsTouchScreen ConfigFlags = 1 << 21 // Application is using a touch screen instead of a mouse.
 )
 
 // SetConfigFlags sets the gamepad/keyboard navigation options, etc.
@@ -253,19 +231,11 @@ func (io IO) SetConfigFlags(flags ConfigFlags) {
 type BackendFlags int
 
 const (
-	// BackendFlagsNone default = 0.
-	BackendFlagsNone BackendFlags = 0
-	// BackendFlagsHasGamepad back-end Platform supports gamepad and currently has one connected.
-	BackendFlagsHasGamepad BackendFlags = 1 << 0
-	// BackendFlagsHasMouseCursors back-end Platform supports honoring GetMouseCursor() value to change the OS cursor
-	// shape.
-	BackendFlagsHasMouseCursors BackendFlags = 1 << 1
-	// BackendFlagsHasSetMousePos back-end Platform supports io.WantSetMousePos requests to reposition the OS mouse
-	// position (only used if ImGuiConfigFlags_NavEnableSetMousePos is set).
-	BackendFlagsHasSetMousePos BackendFlags = 1 << 2
-	// BackendFlagsRendererHasVtxOffset back-end Renderer supports ImDrawCmd::VtxOffset. This enables output of large
-	// meshes (64K+ vertices) while still using 16-bits indices.
-	BackendFlagsRendererHasVtxOffset BackendFlags = 1 << 3
+	BackendFlagsNone                 BackendFlags = 0
+	BackendFlagsHasGamepad           BackendFlags = 1 << 0 // Backend Platform supports gamepad and currently has one connected.
+	BackendFlagsHasMouseCursors      BackendFlags = 1 << 1 // Backend Platform supports honoring GetMouseCursor() value to change the OS cursor shape.
+	BackendFlagsHasSetMousePos       BackendFlags = 1 << 2 // Backend Platform supports io.WantSetMousePos requests to reposition the OS mouse position (only used if io.ConfigNavMoveSetMousePos is set).
+	BackendFlagsRendererHasVtxOffset BackendFlags = 1 << 3 // Backend Renderer supports ImDrawCmd::VtxOffset. This enables output of large meshes (64K+ vertices) while still using 16-bit indices.
 )
 
 // SetBackendFlags sets back-end capabilities.

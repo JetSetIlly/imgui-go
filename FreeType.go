@@ -1,3 +1,4 @@
+//go:build imguifreetype
 // +build imguifreetype
 
 package imgui

@@ -52,7 +52,7 @@ func (state *inputTextState) release() {
 
 func (state *inputTextState) onCallback(handle C.IggInputTextCallbackData) C.int {
 	data := InputTextCallbackData{state: state, handle: handle}
-	if data.EventFlag() == inputTextFlagsCallbackResize {
+	if data.EventFlag() == InputTextFlagsCallbackResize {
 		state.buf.resizeTo(data.bufSize())
 		data.setBuf(state.buf.ptr, state.buf.size, data.bufTextLen())
 		return 0
@@ -88,7 +88,7 @@ func (data InputTextCallbackData) EventFlag() InputTextFlags {
 
 // Flags returns the set of flags that the user originally passed to InputText.
 func (data InputTextCallbackData) Flags() InputTextFlags {
-	return InputTextFlags(C.iggInputTextCallbackDataGetFlags(data.handle)) & ^inputTextFlagsCallbackResize
+	return InputTextFlags(C.iggInputTextCallbackDataGetFlags(data.handle)) & ^InputTextFlagsCallbackResize
 }
 
 // EventChar returns the current character input. Only valid during CharFilter callback.

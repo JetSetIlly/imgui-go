@@ -106,34 +106,18 @@ func BackgroundDrawList() DrawList {
 type DrawFlags int
 
 const (
-	// DrawFlagsNone specified the default behaviour.
-	DrawFlagsNone DrawFlags = 0
-	// DrawFlagsClosed for PathStroke(), AddPolyline(): specify that shape should be closed.
-	DrawFlagsClosed DrawFlags = 1 << 0
-	// DrawFlagsRoundCornersTopLeft for AddRect(), AddRectFilled(), PathRect(): enable rounding top-left corner only (when rounding > 0.0f, we default to all corners).
-	DrawFlagsRoundCornersTopLeft DrawFlags = 1 << 4
-	// DrawFlagsRoundCornersTopRight for AddRect(), AddRectFilled(), PathRect(): enable rounding top-right corner only (when rounding > 0.0f, we default to all corners).
-	DrawFlagsRoundCornersTopRight DrawFlags = 1 << 5
-	// DrawFlagsRoundCornersBottomLeft for AddRect(), AddRectFilled(), PathRect(): enable rounding bottom-left corner only (when rounding > 0.0f, we default to all corners).
-	DrawFlagsRoundCornersBottomLeft DrawFlags = 1 << 6
-	// DrawFlagsRoundCornersBottomRight for AddRect(), AddRectFilled(), PathRect(): enable rounding bottom-right corner only (when rounding > 0.0f, we default to all corners).
-	DrawFlagsRoundCornersBottomRight DrawFlags = 1 << 7
-	// DrawFlagsRoundCornersNone for AddRect(), AddRectFilled(), PathRect(): disable rounding on all corners (when rounding > 0.0f).
-	DrawFlagsRoundCornersNone DrawFlags = 1 << 8
-	// DrawFlagsRoundCornersTop for AddRect(), AddRectFilled(), PathRect(): enable rounding top corners only (when rounding > 0.0f, we default to all corners).
-	DrawFlagsRoundCornersTop DrawFlags = DrawFlagsRoundCornersTopLeft | DrawFlagsRoundCornersTopRight
-	// DrawFlagsRoundCornersBottom for AddRect(), AddRectFilled(), PathRect(): enable rounding bottom corners only (when rounding > 0.0f, we default to all corners).
-	DrawFlagsRoundCornersBottom DrawFlags = DrawFlagsRoundCornersBottomLeft | DrawFlagsRoundCornersBottomRight
-	// DrawFlagsRoundCornersLeft for AddRect(), AddRectFilled(), PathRect(): enable rounding left corners only (when rounding > 0.0f, we default to all corners).
-	DrawFlagsRoundCornersLeft DrawFlags = DrawFlagsRoundCornersBottomLeft | DrawFlagsRoundCornersTopLeft
-	// DrawFlagsRoundCornersRight for AddRect(), AddRectFilled(), PathRect(): enable rounding right corners only (when rounding > 0.0f, we default to all corners).
-	DrawFlagsRoundCornersRight DrawFlags = DrawFlagsRoundCornersBottomRight | DrawFlagsRoundCornersTopRight
-	// DrawFlagsRoundCornersAll  for AddRect(), AddRectFilled(), PathRect(): enable rounding for all corners.
-	DrawFlagsRoundCornersAll DrawFlags = DrawFlagsRoundCornersTopLeft | DrawFlagsRoundCornersTopRight | DrawFlagsRoundCornersBottomLeft | DrawFlagsRoundCornersBottomRight
-	// DrawFlagsRoundCornersDefault default to ALL corners if none of the RoundCornersXX flags are specified.
-	DrawFlagsRoundCornersDefault DrawFlags = DrawFlagsRoundCornersAll
-	// DrawFlagsRoundCornersMask is the bitmask containing the corner flags.
-	DrawFlagsRoundCornersMask DrawFlags = DrawFlagsRoundCornersAll | DrawFlagsRoundCornersNone
+	DrawFlagsNone                    = 0
+	DrawFlagsClosed                  = 1 << 0 // PathStroke(), AddPolyline(): specify that shape should be closed (Important: this is always == 1 for legacy reason)
+	DrawFlagsRoundCornersTopLeft     = 1 << 4 // AddRect(), AddRectFilled(), PathRect(): enable rounding top-left corner only (when rounding > 0.0f, we default to all corners). Was 0x01.
+	DrawFlagsRoundCornersTopRight    = 1 << 5 // AddRect(), AddRectFilled(), PathRect(): enable rounding top-right corner only (when rounding > 0.0f, we default to all corners). Was 0x02.
+	DrawFlagsRoundCornersBottomLeft  = 1 << 6 // AddRect(), AddRectFilled(), PathRect(): enable rounding bottom-left corner only (when rounding > 0.0f, we default to all corners). Was 0x04.
+	DrawFlagsRoundCornersBottomRight = 1 << 7 // AddRect(), AddRectFilled(), PathRect(): enable rounding bottom-right corner only (when rounding > 0.0f, we default to all corners). Wax 0x08.
+	DrawFlagsRoundCornersNone        = 1 << 8 // AddRect(), AddRectFilled(), PathRect(): disable rounding on all corners (when rounding > 0.0f). This is NOT zero, NOT an implicit flag!
+	DrawFlagsRoundCornersTop         = DrawFlagsRoundCornersTopLeft | DrawFlagsRoundCornersTopRight
+	DrawFlagsRoundCornersBottom      = DrawFlagsRoundCornersBottomLeft | DrawFlagsRoundCornersBottomRight
+	DrawFlagsRoundCornersLeft        = DrawFlagsRoundCornersBottomLeft | DrawFlagsRoundCornersTopLeft
+	DrawFlagsRoundCornersRight       = DrawFlagsRoundCornersBottomRight | DrawFlagsRoundCornersTopRight
+	DrawFlagsRoundCornersAll         = DrawFlagsRoundCornersTopLeft | DrawFlagsRoundCornersTopRight | DrawFlagsRoundCornersBottomLeft | DrawFlagsRoundCornersBottomRight
 )
 
 // DrawCornerFlags is replaced by DrawFlags and will be removed in v5.
@@ -292,8 +276,9 @@ func (list DrawList) AddImageV(textureID TextureID, posMin Vec2, posMax Vec2, uv
 }
 
 // AddImageQuad calls AddImageQuadV(textureID, p1, p2, p3, p4,
-// 		Vec2{X: 0, Y: 0}, Vec2{X: 1, Y: 0}, Vec2{X: 1, Y: 1}, Vec2{X: 0, Y: 1},
-//			Packed(color.White)).
+//
+//	Vec2{X: 0, Y: 0}, Vec2{X: 1, Y: 0}, Vec2{X: 1, Y: 1}, Vec2{X: 0, Y: 1},
+//		Packed(color.White)).
 func (list DrawList) AddImageQuad(textureID TextureID, p1 Vec2, p2 Vec2, p3 Vec2, p4 Vec2) {
 	list.AddImageQuadV(textureID, p1, p2, p3, p4,
 		Vec2{X: 0, Y: 0}, Vec2{X: 1, Y: 0}, Vec2{X: 1, Y: 1}, Vec2{X: 0, Y: 1},

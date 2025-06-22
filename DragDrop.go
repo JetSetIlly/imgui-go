@@ -7,25 +7,21 @@ import "C"
 type DragDropFlags int
 
 const (
-	// DragDropFlagsNone specifies the default behaviour.
 	DragDropFlagsNone DragDropFlags = 0
-	// DragDropFlagsSourceNoPreviewTooltip hides the tooltip that is open so you can display a preview or description of the source contents.
-	DragDropFlagsSourceNoPreviewTooltip DragDropFlags = 1 << 0
-	// DragDropFlagsSourceNoDisableHover preserves the behaviour of IsItemHovered. By default, when dragging we clear data so that IsItemHovered() will return true, to avoid subsequent user code submitting tooltips.
-	DragDropFlagsSourceNoDisableHover DragDropFlags = 1 << 1
-	// DragDropFlagsSourceNoHoldToOpenOthers disables the behavior that allows to open tree nodes and collapsing header by holding over them while dragging a source item.
-	DragDropFlagsSourceNoHoldToOpenOthers DragDropFlags = 1 << 2
-	// DragDropFlagsSourceAllowNullID allows items such as Text(), Image() that have no unique identifier to be used as drag source, by manufacturing a temporary identifier based on their window-relative position. This is extremely unusual within the dear ecosystem and so we made it explicit.
-	DragDropFlagsSourceAllowNullID DragDropFlags = 1 << 3
-	// DragDropFlagsSourceExtern specifies external source (from outside of), won't attempt to read current item/window info. Will always return true. Only one Extern source can be active simultaneously.
-	DragDropFlagsSourceExtern DragDropFlags = 1 << 4
-
-	// DragDropFlagsAcceptBeforeDelivery makes AcceptDragDropPayload() return true even before the mouse button is released. You can then call IsDelivery() to test if the payload needs to be delivered.
-	DragDropFlagsAcceptBeforeDelivery DragDropFlags = 1 << 10
-	// DragDropFlagsAcceptNoDrawDefaultRect does not draw the default highlight rectangle when hovering over target.
-	DragDropFlagsAcceptNoDrawDefaultRect DragDropFlags = 1 << 11
-	// DragDropFlagsAcceptPeekOnly is for peeking ahead and inspecting the payload before delivery.
-	DragDropFlagsAcceptPeekOnly = DragDropFlagsAcceptBeforeDelivery | DragDropFlagsAcceptNoDrawDefaultRect
+	// BeginDragDropSource() flags
+	DragDropFlagsSourceNoPreviewTooltip   DragDropFlags = 1 << 0 // Disable preview tooltip. By default, a successful call to BeginDragDropSource opens a tooltip so you can display a preview or description of the source contents. This flag disables this behavior.
+	DragDropFlagsSourceNoDisableHover     DragDropFlags = 1 << 1 // By default, when dragging we clear data so that IsItemHovered() will return false, to avoid subsequent user code submitting tooltips. This flag disables this behavior so you can still call IsItemHovered() on the source item.
+	DragDropFlagsSourceNoHoldToOpenOthers DragDropFlags = 1 << 2 // Disable the behavior that allows to open tree nodes and collapsing header by holding over them while dragging a source item.
+	DragDropFlagsSourceAllowNullID        DragDropFlags = 1 << 3 // Allow items such as Text(), Image() that have no unique identifier to be used as drag source, by manufacturing a temporary identifier based on their window-relative position. This is extremely unusual within the dear imgui ecosystem and so we made it explicit.
+	DragDropFlagsSourceExtern             DragDropFlags = 1 << 4 // External source (from outside of dear imgui), won't attempt to read current item/window info. Will always return true. Only one Extern source can be active simultaneously.
+	DragDropFlagsPayloadAutoExpire        DragDropFlags = 1 << 5 // Automatically expire the payload if the source cease to be submitted (otherwise payloads are persisting while being dragged)
+	DragDropFlagsPayloadNoCrossContext    DragDropFlags = 1 << 6 // Hint to specify that the payload may not be copied outside current dear imgui context.
+	DragDropFlagsPayloadNoCrossProcess    DragDropFlags = 1 << 7 // Hint to specify that the payload may not be copied outside current process.
+	// AcceptDragDropPayload() flags
+	DragDropFlagsAcceptBeforeDelivery    DragDropFlags = 1 << 10                                                                  // AcceptDragDropPayload() will returns true even before the mouse button is released. You can then call IsDelivery() to test if the payload needs to be delivered.
+	DragDropFlagsAcceptNoDrawDefaultRect DragDropFlags = 1 << 11                                                                  // Do not draw the default highlight rectangle when hovering over target.
+	DragDropFlagsAcceptNoPreviewTooltip  DragDropFlags = 1 << 12                                                                  // Request hiding the BeginDragDropSource tooltip from the BeginDragDropTarget site.
+	DragDropFlagsAcceptPeekOnly          DragDropFlags = DragDropFlagsAcceptBeforeDelivery | DragDropFlagsAcceptNoDrawDefaultRect // For peeking ahead and inspecting the payload before delivery.
 )
 
 const (
