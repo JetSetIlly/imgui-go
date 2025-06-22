@@ -77,25 +77,23 @@ func EndGroup() {
 	C.iggEndGroup()
 }
 
-/*
-// Disabled API is beta as v1.84; they can change in such a way that require a
-// major version. So, it's better to leave them out until out of beta.
-
 // BeginDisabled starts a disabled group.
+// [beta]
 func BeginDisabled() {
 	BeginDisabledV(true)
 }
 
 // BeginDisabledV starts a disabled group only if parameter is true.
+// [beta]
 func BeginDisabledV(disabled bool) {
 	C.iggBeginDisabled(castBool(disabled))
 }
 
 // EndDisabled must be called for each call to BeginDisabled().
+// [beta]
 func EndDisabled() {
 	C.iggEndDisabled()
 }
-*/
 
 // CursorPos returns the cursor position in window coordinates (relative to window position).
 func CursorPos() Vec2 {
