@@ -253,6 +253,12 @@ func (io IO) SetMouseDrawCursor(show bool) {
 	C.iggIoSetMouseDrawCursor(io.handle, castBool(show))
 }
 
+// SetHighlightIdConflicts enables on-screen debugging indication when two or more widgets with the same
+// ID are being drawn. Enabled by default.
+func (io IO) SetHighlightIdConflicts(highlight bool) {
+	C.iggIoSetHighlightIdConflicts(io.handle, castBool(highlight))
+}
+
 // BackendFlags for IO.AddKeyEvent.
 type ImguiKey int
 

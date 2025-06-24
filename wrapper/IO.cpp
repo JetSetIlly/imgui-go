@@ -213,3 +213,8 @@ void iggIoSetMouseDrawCursor(IggIO handle, IggBool show)
    io.MouseDrawCursor = show != 0;
 }
 
+void iggIoSetHighlightIdConflicts(IggIO handle, IggBool highlight) 
+{
+   ImGuiIO &io = *reinterpret_cast<ImGuiIO *>(handle);
+   io.ConfigDebugHighlightIdConflicts = highlight == 1;
+}

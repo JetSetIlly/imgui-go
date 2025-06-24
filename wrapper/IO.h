@@ -45,6 +45,8 @@ extern void iggIoSetBackendFlags(IggIO handle, int flags);
 extern int iggIoGetBackendFlags(IggIO handle);
 extern void iggIoSetMouseDrawCursor(IggIO handle, IggBool show);
 
+extern void iggIoSetHighlightIdConflicts(IggIO handle, IggBool highlight);
+
 #ifdef __cplusplus
 }
 #endif
