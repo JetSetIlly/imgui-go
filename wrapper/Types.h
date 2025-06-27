@@ -25,6 +25,7 @@ typedef void *IggInputTextCallbackData;
 typedef void *IggIO;
 typedef unsigned int IggPackedColor;
 typedef void *IggPayload;
+typedef void *IggPlatformIO;
 typedef void *IggTableSortSpecs;
 typedef void *IggViewport;
 
