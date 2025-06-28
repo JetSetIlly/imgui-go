@@ -1,94 +1,66 @@
 # Dear ImGui for Go
 
-[![Go Doc](https://img.shields.io/badge/go.dev-reference-007d9c?logo=go&logoColor=white&style=flat-square)](https://pkg.go.dev/github.com/inkyblackness/imgui-go/v2)
-[![Go Report Card](https://goreportcard.com/badge/github.com/inkyblackness/imgui-go)](https://goreportcard.com/report/github.com/inkyblackness/imgui-go)
-[![Lint Status](https://github.com/inkyblackness/imgui-go/workflows/golangci-lint/badge.svg)](https://github.com/inkyblackness/imgui-go/actions)
+This library is a Go wrapper for [Dear ImGui](https://github.com/ocornut/imgui)
 
-This library is a [Go](https://www.golang.org) wrapper for **[Dear ImGui](https://github.com/ocornut/imgui)**.
+This specific instance of the library is a continuation of the [library started by Christian Haas](https://github.com/inkyblackness/imgui-go), who ceased development some time ago. Despite the original project not being updated in quite some time, I still find it a good solution for my projects. As such, I have decided to update the project so that it uses more recent versions of the base Dear Imgui project.
 
-This wrapper started as a special-purpose wrapper for use within InkyBlackness.
-However, it is self-contained and can be used for other purposes as well.
+The current version of Dear Imgui being used is the docking branch of v1.91.9b
 
-This wrapper is
-* hand-crafted, for Go
-* documented
-* versioned
-* with ported examples in a separate repository (see below)
+Not all features of v1.91.9b are available but in principle they can be added using the existing methods.
 
-![Screenshot from example](assets/screenshot.png)
+Docking can be enabled but viewports are currently unimplemented.
 
-## API naming
+### Changes from version 4 of imgui-go
 
-Names of types and functions follow closely those of **Dear ImGui**.
+If you're moving from a previous version of imgui-go you should be aware that some things have changed, due to changes in Dear Imgui itself.
 
-For functions that have optional parameters, the following schema is applied:
-* There is the "verbose" variant, followed by the letter `V`, such as `ButtonV(id string, size Vec2) bool`
-* Next to it there is the "idiomatic" variant, without any optional parameter, such as `Button(id string) bool`.
-* The idiomatic variant calls the verbose variant with the default values for the optional parameters.
-Functions that don't have optional parameters don't come in a verbose variant.
+__Keyboard__
 
-The **Dear ImGui** functions `IO()` and `Style()` have been renamed to be `CurrentIO()` and `CurrentStyle()`.
-This was done because their returned types have the same name, causing a name clash.
-With the `Current` prefix, they also better describe what they return.
+`KeyPress()` and `KeyRelease()` have been removed and replaced with `AddKeyEvent()`.
+ 
+See the SDL and GLFW platform examples in the updated [imgui-go-examples](https://github.com/JetSetIlly/imgui-go-examples) repository for how to use the new function.
 
-## API philosophy
-This library does not intend to export all the functions of the wrapped **Dear ImGui**. The following filter applies as a rule of thumb:
-* Functions marked as "obsolete" are not available. (The corresponding C code isn't even compiled - disabled by define)
-* "Shortcut" Functions, which combine language features and/or other **Dear ImGui** functions, are not available. There may be exceptions for this if the shortcut exists in Dear ImGui code base (e.g. `ImGui::Text` which does printf style string formatting)
-* Functions that are not needed by InkyBlackness are ignored. This doesn't mean that they can't be in the wrapper, they are simply not a priority. Feel free to propose an implementation or make a pull request, respecting the previous points :)
+__Cursor Positioning__
 
-## Version philosophy
-This library does not mirror the versions of the wrapped **Dear ImGui**. The semantic versioning of this wrapper is defined as:
-* Major changes: (Breaking) changes in API or behaviour. Typically done through changes in **Dear ImGui**.
-* Minor changes: Extensions in API. Typically done through small version increments of **Dear ImGui** and/or exposing further features in a compatible way.
-* Patch changes: Bug fixes - either in the wrapper or the wrapped **Dear ImGui**, given that the API & behaviour remains the same.
+`SetCursorPos()` and `SetScreenCursorPos()` requires a call to `Dummy()` if the position change causes the parent area to be extended. Dear Imgui will panic if it can't validate the new extent.
 
-At the moment, this library uses version [1.85](https://github.com/ocornut/imgui/releases/tag/v1.85) of **Dear ImGui**.
+__Content Regions__
 
-## Examples
-A separate repository was created to host ported examples and reference implementations.
-See repository [inkyblackness/imgui-go-examples](https://github.com/inkyblackness/imgui-go-examples).
+`ContentRegionMax()` has been removed. `ContentRegionAvail()` is a good substitute in many cases, but remember to take the current cursor position into account.
 
-It contains reference implementations for libraries such as [GLFW3](https://github.com/go-gl/glfw) and [SDL2](https://github.com/veandco/go-sdl2), using [OpenGL](https://github.com/go-gl/gl).
+__Disabling Widgets__
 
-The screenshot above was created with such an example.
+`ItemFlagsDisabled` has been removed. Use `BeginDisabled()` and `EndDisabled()` instead.
 
-## Extras
+__ChildFlags__
 
-### FreeType font rendering
+`BeginChildV()` now takes flags of the type `ChildFlags` and not `WindowFlags`.
+ 
+Some WindowFlags have no ChildFlags equivalent: `NoMove`, `AlwaysAutoResize`, `NoScrollbar` and `AlwaysVerticalScrollbar`.
 
-If the `FreeType` library is available for your platform, you can enable using it with the build tag `imguifreetype` - as in
-```
-go build -tags="imguifreetype"
-```
-This extra is based on the reference implementation from **Dear ImGui**.
+All missing functionality can be achieved in other ways. For example, `NoMove` can be replicated by detecting the hover status of the Child:
 
-If you set the build tag, yet the corresponding support has not been added to the library, you will receive a build error.
-Contributions to support more build environments are happily accepted. See file `FreeType.go`.
+		imgui.BeginChild()
+		...
+		imgui.EndChild()
+		
+		state.hover := imgui.IsHovered()
+	
+And then next frame, changing the window flags for the containing window:
 
-> If you are trying to do this on MS Windows with MinGW and receive an error like
-> `pkg-config: exec: "pkg-config": executable file not found in %PATH%`,
-> refer to [online guides](https://stackoverflow.com/questions/1710922/how-to-install-pkg-config-in-windows) on how to add this to your installation.
+		var flgs imgui.Flags
+		if state.hover {
+			flags = imgui.WindowFlagsNoMove
+		} else  {
+			flags = imgui.WindowFlagsNone
+		}
 
-## Alternatives
+__ListClipper__
 
-Since 2022-08, there is https://github.com/AllenDang/cimgui-go , which is an auto-generated wrapper that
-makes it easier to be at the latest version of **Dear ImGui**. It is recommended to use that one instead. 
+`ListClipperAll()` replaces all other functions of the ListClipper type `Begin()`, `Step()` and `End()`. The ListClipper type is now returned by the new function and contains only the final results.
 
-Before inkyblackness/imgui-go was created, the following alternatives were considered - and ignored:
-* `kdrag0n/go-imgui` (no longer available). Reasons for dismissal at time of decision:
-  * Auto-generated bloat, which doesn't help
-  * Was using old API (1.5x)
-  * Did not compile
-  * Project appeared to be abandoned
-* [Extrawurst/cimgui](https://github.com/Extrawurst/cimgui). Reasons for dismissal at time of decision:
-  * Was using old API (1.5x), 1.6x was attempted
-  * Apparently semi-exposed the C++ API, especially through the structures
-  * Adding this adds another dependency
-  * Note: `cimgui` has since switched to an auto-generated method. You can use that instead of this manually curated wrapper here.
+		results := imgui.ListClipperAll(len(entries), func(i int) {
+			imgui.Text(entries[i])
+		})
 
-
-## License
-
-The project is available under the terms of the **New BSD License** (see LICENSE file).
-The licenses of included sources are stored in the **_licenses** folder.
+This new function was added because I was having problems maintaining state when returning from the three canonical functions. Calling Go as a callback from C solves the problem and makes for a convenient function. The downside is that you can't change the ListClipper state between the Step() and DisplayStart-to-DisplayEnd loop - but having tried doing that kind of thing in the past, being prevented from doing it is probably a feature.
