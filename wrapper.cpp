@@ -15,6 +15,7 @@
 #include "wrapper/Color.cpp"
 #include "wrapper/Context.cpp"
 #include "wrapper/Focus.cpp"
+#include "wrapper/Dock.cpp" 
 #include "wrapper/DragDrop.cpp"
 #include "wrapper/DrawCommand.cpp"
 #include "wrapper/DrawData.cpp"
