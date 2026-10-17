@@ -23,6 +23,10 @@ extern void iggMouseWheel(IggIO handle, float *mouseWheelH, float *mouseWheel);
 extern void iggDisplayFrameBufferScale(IggIO handle, IggVec2 *value);
 extern IggFontAtlas iggIoGetFonts(IggIO handle);
 
+extern float iggKeyRepeatDelay(IggIO handle);
+extern float iggKeyRepeatRate(IggIO handle);
+extern void iggIoSetKeyRepeatDelay(IggIO handle, float delay);
+extern void iggIoSetKeyRepeatRate(IggIO handle, float rate);
 extern void iggIoSetDisplaySize(IggIO handle, IggVec2 const *value);
 extern void iggIoSetDisplayFrameBufferScale(IggIO handle, IggVec2 const *value);
 extern void iggIoGetMousePosition(IggIO handle, IggVec2 *value);

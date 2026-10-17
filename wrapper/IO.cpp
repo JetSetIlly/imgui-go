@@ -89,6 +89,30 @@ IggFontAtlas iggIoGetFonts(IggIO handle)
    return reinterpret_cast<IggFontAtlas>(io->Fonts);
 }
 
+extern float iggKeyRepeatDelay(IggIO handle)
+{
+   ImGuiIO *io = reinterpret_cast<ImGuiIO *>(handle);
+   return io->KeyRepeatDelay;
+}
+
+extern float iggKeyRepeatRate(IggIO handle)
+{
+   ImGuiIO *io = reinterpret_cast<ImGuiIO *>(handle);
+   return io->KeyRepeatRate;
+}
+
+void iggIoSetKeyRepeatDelay(IggIO handle, float delay)
+{
+   ImGuiIO *io = reinterpret_cast<ImGuiIO *>(handle);
+   io->KeyRepeatDelay = delay;
+}
+
+void iggIoSetKeyRepeatRate(IggIO handle, float rate)
+{
+   ImGuiIO *io = reinterpret_cast<ImGuiIO *>(handle);
+   io->KeyRepeatRate = rate;
+}
+
 void iggIoSetDisplaySize(IggIO handle, IggVec2 const *value)
 {
    ImGuiIO *io = reinterpret_cast<ImGuiIO *>(handle);

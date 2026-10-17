@@ -108,6 +108,26 @@ func (io IO) DisplayFrameBufferScale() Vec2 {
 	return value
 }
 
+// KeyRepeatDelay returns the current the key repeat delay time.
+func (io IO) KeyRepeatDelay() float32 {
+	return float32(C.iggKeyRepeatDelay(io.handle))
+}
+
+// KeyRepeatRate returns the current the key repeat rate.
+func (io IO) KeyRepeatRate() float32 {
+	return float32(C.iggKeyRepeatRate(io.handle))
+}
+
+// SetKeyRepeatDelay sets the delay before key repeat begins.
+func (io IO) SetKeyRepeatDelay(delay float32) {
+	C.iggIoSetKeyRepeatDelay(io.handle, C.float(delay))
+}
+
+// SetKeyRepeatRate sets rate at which a key repeats.
+func (io IO) SetKeyRepeatRate(rate float32) {
+	C.iggIoSetKeyRepeatRate(io.handle, C.float(rate))
+}
+
 // SetDisplaySize sets the size in pixels.
 func (io IO) SetDisplaySize(value Vec2) {
 	out, _ := value.wrapped()
